@@ -10,7 +10,6 @@ export function OurApproachSection() {
           eyebrow="Our Approach"
           title="How HUDA works"
           description="As a new organization, we want to be clear about the principles that will guide every program we run."
-          align="center"
         />
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
