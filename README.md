@@ -205,7 +205,7 @@ Admin routes (`/admin/*`) are protected in two layers:
 
 ### Creating a program
 
-1. Sign in at `/admin/login`.
+1. Sign in at ```/admin/login```.
 2. **Programs → + New Program.** Fill in title, date, category, short and
    full description. Slug auto-fills from the title (editable).
 3. Optionally upload a cover image, set a registration link, or mark it
