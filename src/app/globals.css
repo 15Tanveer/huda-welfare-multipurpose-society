@@ -75,6 +75,19 @@ body {
     border-radius: 2px;
   }
 
+  /* Buttons don't get a pointer cursor by default in every browser
+     (Chrome's UA stylesheet uses `cursor: default` for <button>, unlike
+     <a>) — apply it consistently to every clickable control. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
   ::selection {
     background: var(--color-green-light);
     color: var(--color-deep-green);
