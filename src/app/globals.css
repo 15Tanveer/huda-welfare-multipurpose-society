@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand palette — HUDA Welfare & Educational Multipurpose Society */
+  --color-deep-green: #14532d;
+  --color-green: #15803d;
+  --color-green-light: #dcfce7;
+  --color-off-white: #fafaf7;
+  --color-white: #ffffff;
+  --color-gold: #c9a227;
+  --color-ink: #17221b;
+  --color-muted: #667069;
+
+  --background: var(--color-off-white);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-brand-deep: var(--color-deep-green);
+  --color-brand: var(--color-green);
+  --color-brand-light: var(--color-green-light);
+  --color-brand-off-white: var(--color-off-white);
+  --color-brand-white: var(--color-white);
+  --color-brand-gold: var(--color-gold);
+  --color-brand-ink: var(--color-ink);
+  --color-brand-muted: var(--color-muted);
+
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-fade-in-up: fade-in-up 0.7s ease-out both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-green-light);
+    color: var(--color-deep-green);
+  }
+}
+
+@layer utilities {
+  .container-x {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-x {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  .leaf-pattern {
+    background-image: radial-gradient(
+        circle at 1px 1px,
+        rgba(21, 128, 61, 0.14) 1px,
+        transparent 0
+      );
+    background-size: 22px 22px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
