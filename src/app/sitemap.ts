@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllProgramSlugs } from "@/lib/data/programs";
+import { getSiteUrl } from "@/lib/site-url";
 
 const STATIC_ROUTES = [
   "",
@@ -14,7 +15,7 @@ const STATIC_ROUTES = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = getSiteUrl();
   const slugs = await getAllProgramSlugs();
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
