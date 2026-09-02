@@ -7,6 +7,7 @@ import type { GalleryRow } from "@/types/database";
 import { GALLERY_CATEGORIES } from "@/lib/constants";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
 import { GalleryLightbox } from "@/components/gallery/GalleryLightbox";
 
 export function GalleryGrid({ items }: { items: GalleryRow[] }) {
@@ -22,8 +23,13 @@ export function GalleryGrid({ items }: { items: GalleryRow[] }) {
     return (
       <EmptyState
         icon={Camera}
-        title="Our gallery is coming soon"
-        description="Our activity gallery will be updated as HUDA begins conducting community programs."
+        title="Stories from our work will live here"
+        description="Photographs from HUDA programs and community initiatives will be added as activities are conducted."
+        action={
+          <Button href="/programs" variant="outline" size="md">
+            View Upcoming Programs
+          </Button>
+        }
       />
     );
   }

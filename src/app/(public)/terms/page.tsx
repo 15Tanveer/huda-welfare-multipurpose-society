@@ -28,8 +28,8 @@ export default async function TermsPage() {
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-brand-ink">Accuracy of Information</h2>
           <p>
-            As a new organization, HUDA is committed to only publishing information that
-            reflects our real activities. Program details, dates and reports are updated
+            HUDA is committed to only publishing information that reflects our real
+            activities. Program details, dates and reports are updated
             by our team as programs are planned and completed. We aim to keep this
             information accurate but it may be updated without prior notice.
           </p>

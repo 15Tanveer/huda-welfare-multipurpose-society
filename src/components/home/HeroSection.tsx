@@ -21,7 +21,7 @@ export function HeroSection({ settings }: { settings: SiteSettings }) {
         aria-hidden="true"
       />
 
-      <Container className="relative flex flex-col items-start gap-8 py-20 sm:py-24 lg:py-28">
+      <Container className="relative flex flex-col items-start gap-6 py-20 sm:py-24 lg:py-28">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-brand-light">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
           {location || "Hinganghat, Maharashtra"}
@@ -31,9 +31,13 @@ export function HeroSection({ settings }: { settings: SiteSettings }) {
           {settings.organization_name}
         </h1>
 
+        <p className="max-w-2xl text-balance text-xl font-semibold text-brand-gold sm:text-2xl">
+          Empowering Communities. Creating Opportunities.
+        </p>
+
         <p className="max-w-2xl text-balance text-lg leading-relaxed text-white/85 sm:text-xl">
           {settings.tagline ??
-            "Working together for education, healthcare, empowerment and community welfare."}
+            "Working across education, healthcare, skills, empowerment and community development to help create meaningful opportunities for people and communities."}
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -58,9 +62,9 @@ export function HeroSection({ settings }: { settings: SiteSettings }) {
 
         <div className="mt-4 grid w-full grid-cols-1 gap-4 border-t border-white/10 pt-8 sm:grid-cols-3">
           {[
-            { icon: BookOpen, label: "Education & Awareness" },
-            { icon: HeartPulse, label: "Healthcare Support" },
-            { icon: Users, label: "Community Empowerment" },
+            { icon: BookOpen, label: "Education & Opportunity" },
+            { icon: HeartPulse, label: "Health & Wellbeing" },
+            { icon: Users, label: "Community Development" },
           ].map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center gap-3 text-white/85">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">

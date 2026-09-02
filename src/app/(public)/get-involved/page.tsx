@@ -20,8 +20,8 @@ export default async function GetInvolvedPage() {
     <>
       <PageHero
         eyebrow="Get Involved"
-        title="Be part of HUDA's early journey"
-        description="As a new organization, every volunteer, partner and supporter helps us build a stronger foundation for community welfare work."
+        title="Be part of meaningful community action"
+        description="Whether you contribute your time, skills, professional expertise or ideas, there are many ways to support HUDA's community initiatives."
       />
 
       <Container className="flex flex-col gap-20 py-16 sm:py-20">
@@ -46,8 +46,9 @@ export default async function GetInvolvedPage() {
             </span>
             <h2 className="text-lg font-semibold text-brand-ink">Partner With Us</h2>
             <p className="text-sm leading-relaxed text-brand-muted">
-              Schools, clinics, businesses and other organizations in {settings.city}
-              can partner with HUDA on upcoming community programs.
+              We welcome collaboration with schools, colleges, healthcare
+              professionals, businesses, institutions and community groups in{" "}
+              {settings.city} on upcoming community programs.
             </p>
           </div>
           <div className="flex flex-col gap-3 rounded-2xl border border-brand-ink/8 bg-brand-light/30 p-7">

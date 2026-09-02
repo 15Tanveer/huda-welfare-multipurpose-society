@@ -14,10 +14,11 @@ import { NewsletterSection } from "@/components/home/NewsletterSection";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
-    title: `${settings.organization_name}`,
-    description:
-      settings.tagline ??
-      "A community welfare and educational organization based in Hinganghat, Maharashtra.",
+    // `absolute` skips the root layout's `%s | HUDA` title template —
+    // without it this becomes "HUDA ... | HUDA" (the org's own short
+    // name appended to its own full name).
+    title: { absolute: `${settings.organization_name} | ${settings.city}` },
+    description: `${settings.short_name} is a community-focused organization in ${settings.city} working across education, healthcare, skills, empowerment, social welfare and community development.`,
     alternates: { canonical: "/" },
   };
 }

@@ -160,7 +160,7 @@ export function ProgramForm({
           <select
             id="category"
             name="category"
-            defaultValue={program?.category ?? "community-welfare"}
+            defaultValue={program?.category ?? "community-rural-development"}
             required
             className={inputClasses}
           >

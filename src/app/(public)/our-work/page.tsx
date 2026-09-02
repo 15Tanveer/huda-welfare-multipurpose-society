@@ -8,7 +8,7 @@ import { FOCUS_AREAS, APPROACH_PRINCIPLES } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Our Work",
   description:
-    "The areas HUDA Welfare & Educational Multipurpose Society intends to work in: education, healthcare, skill development, women empowerment, social awareness and community welfare.",
+    "HUDA Welfare & Educational Multipurpose Society works across education & career development, healthcare & wellness, youth skills & employment, women & child empowerment, community & rural development, and environment & social awareness.",
   alternates: { canonical: "/our-work" },
 };
 
@@ -17,25 +17,35 @@ export default function OurWorkPage() {
     <>
       <PageHero
         eyebrow="Our Work"
-        title="Where we intend to focus our efforts"
-        description="HUDA is organizing its programs around six core areas. As we grow, each area will be filled in with real programs, reports and photographs."
+        title="Building Stronger Communities Through Practical Action"
+        description="HUDA focuses on interconnected areas that influence individual and community development — from education and health to skills, opportunities, social awareness and the environment."
       />
 
       <Container className="flex flex-col gap-16 py-16 sm:py-20">
         <section className="flex flex-col gap-8">
-          {FOCUS_AREAS.map(({ slug, title, description, icon: Icon }, index) => (
+          {FOCUS_AREAS.map(({ slug, title, description, icon: Icon, topics }, index) => (
             <div
               key={slug}
-              className={`flex flex-col gap-6 rounded-2xl border border-brand-ink/8 bg-white p-8 sm:flex-row sm:items-center ${
+              className={`flex flex-col gap-6 rounded-2xl border border-brand-ink/8 bg-white p-8 sm:flex-row sm:items-start ${
                 index % 2 === 1 ? "sm:flex-row-reverse" : ""
               }`}
             >
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-light text-brand-deep">
                 <Icon className="h-8 w-8" aria-hidden="true" />
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <h2 className="text-xl font-semibold text-brand-ink">{title}</h2>
                 <p className="leading-relaxed text-brand-muted">{description}</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {topics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="rounded-full bg-brand-light/60 px-3 py-1 text-xs font-medium text-brand-deep"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -44,8 +54,8 @@ export default function OurWorkPage() {
         <section className="flex flex-col gap-8">
           <SectionHeading
             eyebrow="Our Approach"
-            title="How we plan to work"
-            description="These principles will guide every program HUDA runs, starting with our first planned event."
+            title="How we work"
+            description="These principles guide how HUDA plans, conducts and evaluates its community initiatives."
           />
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {APPROACH_PRINCIPLES.map(({ title, description, icon: Icon }) => (

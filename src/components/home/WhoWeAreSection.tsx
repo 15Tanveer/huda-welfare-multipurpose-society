@@ -12,17 +12,17 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
           <SectionHeading eyebrow="Who We Are" title={`About ${settings.short_name}`} />
           <div className="flex flex-col gap-4 text-base leading-relaxed text-brand-muted">
             <p>
-              {settings.organization_name} is a welfare and educational multipurpose
-              society based in {settings.city}, {settings.state}. We are a growing
-              community organization working to bring meaningful initiatives in
-              education, healthcare awareness, empowerment and social welfare to the
-              people around us.
+              {settings.organization_name} is a community-focused organization based in{" "}
+              {settings.city}, {settings.state}. We work to create meaningful initiatives
+              that strengthen education, health, skills, opportunities and overall
+              community well-being.
             </p>
             <p>
-              Our focus is on supporting underserved communities through practical,
-              on-the-ground initiatives — from guiding students and families towards
-              educational opportunities, to raising awareness around health and
-              government schemes, to helping people build livelihood skills.
+              Our approach combines awareness, practical support, community
+              participation and collaboration to help people access opportunities for
+              growth — from guiding students and families towards educational
+              opportunities, to raising awareness around health and government
+              schemes, to helping people build livelihood skills.
             </p>
           </div>
           <Button href="/about" variant="outline" size="md" className="self-start">

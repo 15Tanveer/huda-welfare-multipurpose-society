@@ -1,25 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import { createPublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { TeamMemberRow } from "@/types/database";
 
-// Public reads only ever need *active* members, which the public client
-// can see under RLS — used on the (statically generated) About page, so
-// it must not depend on request cookies. Admin reads need every member,
-// active or not, which requires the authenticated cookie-aware client
-// (`team_members_admin_all` RLS policy) and are only ever called from
-// dynamic /admin/* routes, never at build time.
-
-export async function getActiveTeamMembers(): Promise<TeamMemberRow[]> {
-  if (!isSupabaseConfigured()) return [];
-  const supabase = createPublicClient();
-  const { data } = await supabase
-    .from("team_members")
-    .select("*")
-    .eq("is_active", true)
-    .order("display_order", { ascending: true });
-  return data ?? [];
-}
+// Governing-body members are managed in the admin panel but are not
+// rendered on the public website (see About page) — the `team_members`
+// table's RLS only grants read access to authenticated (admin) users, so
+// every read here goes through the cookie-aware authenticated client and
+// is only ever called from dynamic /admin/* routes, never at build time.
 
 export async function getAllTeamMembers(): Promise<TeamMemberRow[]> {
   if (!isSupabaseConfigured()) return [];
