@@ -1,5 +1,6 @@
 import type { SiteSettings } from "@/types";
 import type { ProgramRow } from "@/types/database";
+import { getConfiguredSiteUrl } from "@/lib/site-url";
 
 /**
  * Builds Organization/NGO JSON-LD from real configured settings only.
@@ -7,7 +8,7 @@ import type { ProgramRow } from "@/types/database";
  * placeholder or fabricated values.
  */
 export function organizationJsonLd(settings: SiteSettings) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = getConfiguredSiteUrl();
 
   const sameAs = [
     settings.facebook,
@@ -49,7 +50,7 @@ export function organizationJsonLd(settings: SiteSettings) {
 export function programEventJsonLd(program: ProgramRow, settings: SiteSettings) {
   if (!program.venue && !program.address) return null;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = getConfiguredSiteUrl();
 
   return {
     "@context": "https://schema.org",

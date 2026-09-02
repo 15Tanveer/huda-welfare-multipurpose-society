@@ -12,6 +12,7 @@ import { PROGRAM_CATEGORIES } from "@/lib/constants";
 import { formatProgramDate, formatTimeRange } from "@/lib/format";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { programEventJsonLd } from "@/lib/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 import { Container } from "@/components/ui/Container";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { BrandPlaceholder } from "@/components/ui/BrandPlaceholder";
@@ -75,8 +76,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
   const categoryLabel =
     PROGRAM_CATEGORIES.find((c) => c.value === program.category)?.label ?? "Community";
   const timeRange = formatTimeRange(program.start_time, program.end_time);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const pageUrl = `${siteUrl}/programs/${program.slug}`;
+  const pageUrl = `${getSiteUrl()}/programs/${program.slug}`;
   const eventJsonLd = programEventJsonLd(program, settings);
 
   return (

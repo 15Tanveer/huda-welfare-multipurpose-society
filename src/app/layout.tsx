@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
 import { getSiteSettings } from "@/lib/settings";
 import { organizationJsonLd } from "@/lib/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const bodyFont = Inter({
@@ -17,14 +18,12 @@ const headingFont = Manrope({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const name = settings.organization_name;
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(getSiteUrl()),
     title: {
       default: `${name} | ${settings.city}, ${settings.state}`,
       template: `%s | ${settings.short_name}`,
