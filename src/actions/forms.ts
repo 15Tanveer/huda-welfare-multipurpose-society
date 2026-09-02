@@ -54,6 +54,7 @@ export async function submitVolunteerForm(
   });
 
   if (error) {
+    console.error("[submitVolunteerForm] volunteer_submissions insert failed:", error);
     return {
       success: false,
       message: "Something went wrong while submitting your details. Please try again.",
@@ -111,6 +112,7 @@ export async function submitContactForm(
   });
 
   if (error) {
+    console.error("[submitContactForm] contact_submissions insert failed:", error);
     return {
       success: false,
       message: "Something went wrong while sending your message. Please try again.",
@@ -146,6 +148,7 @@ export async function subscribeNewsletter(
     .insert({ email: parsed.data.email });
 
   if (error && error.code !== "23505") {
+    console.error("[subscribeNewsletter] newsletter_subscribers insert failed:", error);
     return { success: false, message: "Something went wrong. Please try again." };
   }
 
