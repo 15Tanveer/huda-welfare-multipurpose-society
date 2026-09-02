@@ -238,6 +238,8 @@ export type ResourceRow = {
   important_notes: string | null;
   provided_by: string | null;
   official_url: string | null;
+  application_url: string | null;
+  audience_tags: string[];
   scope: ResourceScope;
   state: string | null;
   application_deadline: string | null;

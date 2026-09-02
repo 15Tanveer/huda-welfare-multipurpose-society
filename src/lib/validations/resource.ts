@@ -76,6 +76,30 @@ export const resourceFormSchema = z.object({
     .refine((v) => v === null || /^https?:\/\//.test(v), {
       error: "Official link must start with http:// or https://",
     }),
+  application_url: z
+    .string()
+    .trim()
+    .max(500)
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v ? v : null))
+    .refine((v) => v === null || /^https?:\/\//.test(v), {
+      error: "Application link must start with http:// or https://",
+    }),
+  audience_tags: z
+    .string()
+    .trim()
+    .max(500)
+    .optional()
+    .or(z.literal(""))
+    .transform((v) =>
+      v
+        ? v
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : []
+    ),
   scope: z.enum(SCOPE_VALUES, { error: "Please select a scope." }),
   state: optionalText,
   application_deadline: optionalDateTime,

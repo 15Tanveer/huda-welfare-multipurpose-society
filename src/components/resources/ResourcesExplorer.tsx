@@ -25,6 +25,7 @@ export function ResourcesExplorer({ resources }: { resources: ResourceRow[] }) {
         r.title.toLowerCase().includes(query) ||
         r.short_description.toLowerCase().includes(query) ||
         (r.audience?.toLowerCase().includes(query) ?? false) ||
+        r.audience_tags.some((tag) => tag.toLowerCase().includes(query)) ||
         r.category.toLowerCase().includes(query)
       );
     });

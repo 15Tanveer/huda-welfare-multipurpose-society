@@ -32,7 +32,18 @@ export function ResourceCard({ resource }: { resource: ResourceRow }) {
         {resource.short_description}
       </p>
 
-      {resource.audience ? (
+      {resource.audience_tags.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {resource.audience_tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center rounded-full border border-brand-ink/10 bg-brand-light/40 px-2 py-0.5 text-[11px] font-medium text-brand-deep"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      ) : resource.audience ? (
         <p className="text-xs text-brand-muted">
           <span className="font-medium text-brand-ink">Who it&apos;s for: </span>
           {resource.audience}

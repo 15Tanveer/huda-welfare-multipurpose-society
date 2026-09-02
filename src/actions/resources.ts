@@ -27,6 +27,8 @@ function parseResourceForm(formData: FormData) {
     important_notes: formData.get("important_notes"),
     provided_by: formData.get("provided_by"),
     official_url: formData.get("official_url"),
+    application_url: formData.get("application_url"),
+    audience_tags: formData.get("audience_tags"),
     scope: formData.get("scope"),
     state: formData.get("state"),
     application_deadline: formData.get("application_deadline"),
