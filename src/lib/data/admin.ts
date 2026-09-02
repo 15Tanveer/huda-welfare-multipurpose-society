@@ -11,6 +11,8 @@ export interface DashboardStats {
   galleryImages: number;
   volunteerRequests: number;
   newContactMessages: number;
+  activeResources: number;
+  resourcesNeedingVerification: number;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -23,6 +25,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     galleryImages,
     volunteerRequests,
     newContactMessages,
+    activeResources,
+    resourcesNeedingVerification,
   ] = await Promise.all([
     supabase.from("programs").select("id", { count: "exact", head: true }),
     supabase
@@ -39,6 +43,14 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       .from("contact_submissions")
       .select("id", { count: "exact", head: true })
       .eq("status", "new"),
+    supabase
+      .from("resources")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active"),
+    supabase
+      .from("resources")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "needs-verification"),
   ]);
 
   return {
@@ -48,6 +60,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     galleryImages: galleryImages.count ?? 0,
     volunteerRequests: volunteerRequests.count ?? 0,
     newContactMessages: newContactMessages.count ?? 0,
+    activeResources: activeResources.count ?? 0,
+    resourcesNeedingVerification: resourcesNeedingVerification.count ?? 0,
   };
 }
 

@@ -1,6 +1,6 @@
-import type { ProgramStatus, SubmissionStatus } from "@/types/database";
+import type { ProgramStatus, ResourceStatus, SubmissionStatus } from "@/types/database";
 
-type Status = ProgramStatus | SubmissionStatus;
+type Status = ProgramStatus | SubmissionStatus | ResourceStatus;
 
 const styles: Record<Status, string> = {
   upcoming: "bg-brand-light text-brand-deep",
@@ -10,6 +10,8 @@ const styles: Record<Status, string> = {
   contacted: "bg-brand-light text-brand-deep",
   read: "bg-slate-100 text-slate-600",
   archived: "bg-slate-100 text-slate-500",
+  active: "bg-brand-light text-brand-deep",
+  "needs-verification": "bg-amber-50 text-amber-700",
 };
 
 const labels: Record<Status, string> = {
@@ -20,6 +22,8 @@ const labels: Record<Status, string> = {
   contacted: "Contacted",
   read: "Read",
   archived: "Archived",
+  active: "Active",
+  "needs-verification": "Needs Verification",
 };
 
 export function StatusBadge({ status }: { status: Status }) {

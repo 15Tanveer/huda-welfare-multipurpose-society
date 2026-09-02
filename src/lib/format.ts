@@ -37,3 +37,22 @@ export function formatSubmittedAt(dateStr: string): string {
     minute: "2-digit",
   });
 }
+
+/** Formats an ISO timestamp as "2 September 2026" — used for Resources'
+ * "Last verified" and "Application deadline" display. */
+export function formatIsoDateLong(isoStr: string): string {
+  return new Date(isoStr).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/**
+ * Plain (non-component) helper so the `Date.now()` call doesn't happen
+ * directly inside a component body, which React's purity lint rule flags
+ * as an impure render.
+ */
+export function isPastDeadline(isoStr: string): boolean {
+  return new Date(isoStr).getTime() < Date.now();
+}

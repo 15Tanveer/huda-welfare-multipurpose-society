@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Calendar, CalendarCheck, CalendarClock, Image as ImageIcon, Mail, Users } from "lucide-react";
+import {
+  BookMarked,
+  Calendar,
+  CalendarCheck,
+  CalendarClock,
+  Image as ImageIcon,
+  Mail,
+  ShieldAlert,
+  Users,
+} from "lucide-react";
 import { getDashboardStats } from "@/lib/data/admin";
 import { StatCard } from "@/components/admin/StatCard";
 
@@ -23,6 +32,12 @@ export default async function AdminDashboardPage() {
         <StatCard label="Gallery Images" value={stats.galleryImages} icon={ImageIcon} />
         <StatCard label="Volunteer Requests" value={stats.volunteerRequests} icon={Users} />
         <StatCard label="New Contact Messages" value={stats.newContactMessages} icon={Mail} />
+        <StatCard label="Active Resources" value={stats.activeResources} icon={BookMarked} />
+        <StatCard
+          label="Resources Needing Verification"
+          value={stats.resourcesNeedingVerification}
+          icon={ShieldAlert}
+        />
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -31,6 +46,12 @@ export default async function AdminDashboardPage() {
           className="rounded-full bg-brand-deep px-5 py-2.5 text-sm font-medium text-white hover:bg-[#0f3d22]"
         >
           + New Program
+        </Link>
+        <Link
+          href="/admin/resources/new"
+          className="rounded-full border border-brand-ink/15 px-5 py-2.5 text-sm font-medium text-brand-deep hover:bg-brand-light"
+        >
+          + New Resource
         </Link>
         <Link
           href="/admin/gallery"

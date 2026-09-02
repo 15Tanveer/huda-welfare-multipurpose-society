@@ -191,6 +191,71 @@ export type SiteSettingsUpdate = Partial<
   Omit<SiteSettingsRow, "id" | "updated_at">
 >;
 
+/**
+ * Category/type/scope/status literal unions live in
+ * src/lib/resources-config.ts (the single source of truth also used by
+ * the Zod schema, admin form and public filters) — re-exported here as
+ * plain type aliases so this file's own "hand-written mirror" convention
+ * holds without importing lucide-react-adjacent config into the type
+ * layer twice.
+ */
+export type ResourceCategory =
+  | "education-scholarships"
+  | "skills-employment"
+  | "healthcare-welfare"
+  | "women-child-support"
+  | "agriculture-rural-development"
+  | "social-welfare"
+  | "other-opportunities";
+
+export type ResourceKind =
+  | "government-scheme"
+  | "scholarship"
+  | "training-program"
+  | "employment-opportunity"
+  | "education-opportunity"
+  | "health-resource"
+  | "community-resource"
+  | "other";
+
+export type ResourceScope = "central" | "maharashtra" | "other";
+
+export type ResourceStatus = "active" | "needs-verification" | "archived";
+
+export type ResourceRow = {
+  id: string;
+  title: string;
+  slug: string;
+  resource_type: ResourceKind;
+  category: ResourceCategory;
+  short_description: string;
+  description: string | null;
+  audience: string | null;
+  eligibility: string | null;
+  benefits: string | null;
+  documents_required: string | null;
+  how_to_apply: string | null;
+  important_notes: string | null;
+  provided_by: string | null;
+  official_url: string | null;
+  scope: ResourceScope;
+  state: string | null;
+  application_deadline: string | null;
+  last_verified_at: string | null;
+  featured: boolean;
+  status: ResourceStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ResourceInsert = Omit<
+  ResourceRow,
+  "id" | "created_at" | "updated_at"
+> &
+  Partial<Pick<ResourceRow, "id" | "created_at" | "updated_at">>;
+
+export type ResourceUpdate = Partial<ResourceInsert>;
+
 export type Database = {
   public: {
     Tables: {
@@ -241,6 +306,12 @@ export type Database = {
         Row: SiteSettingsRow;
         Insert: Partial<SiteSettingsRow>;
         Update: SiteSettingsUpdate;
+        Relationships: [];
+      };
+      resources: {
+        Row: ResourceRow;
+        Insert: ResourceInsert;
+        Update: ResourceUpdate;
         Relationships: [];
       };
     };
