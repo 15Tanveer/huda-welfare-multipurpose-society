@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/settings";
 import { getNextUpcomingProgram, getRecentCompletedPrograms } from "@/lib/data/programs";
+import { getFeaturedResources } from "@/lib/data/resources";
 import { HeroSection } from "@/components/home/HeroSection";
 import { WhoWeAreSection } from "@/components/home/WhoWeAreSection";
 import { FocusAreaSection } from "@/components/home/FocusAreaSection";
+import { ResourcesSection } from "@/components/home/ResourcesSection";
 import { UpcomingProgramSection } from "@/components/home/UpcomingProgramSection";
 import { MissionVisionSection } from "@/components/home/MissionVisionSection";
 import { OurApproachSection } from "@/components/home/OurApproachSection";
@@ -24,10 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, upcomingProgram, recentPrograms] = await Promise.all([
+  const [settings, upcomingProgram, recentPrograms, featuredResources] = await Promise.all([
     getSiteSettings(),
     getNextUpcomingProgram(),
     getRecentCompletedPrograms(3),
+    getFeaturedResources(3),
   ]);
 
   return (
@@ -35,6 +38,7 @@ export default async function HomePage() {
       <HeroSection settings={settings} />
       <WhoWeAreSection settings={settings} />
       <FocusAreaSection />
+      <ResourcesSection resources={featuredResources} />
       <UpcomingProgramSection program={upcomingProgram} />
       <MissionVisionSection settings={settings} />
       <OurApproachSection />

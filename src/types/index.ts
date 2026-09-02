@@ -9,6 +9,11 @@ export type {
   VolunteerSubmissionRow as VolunteerSubmission,
   ContactSubmissionRow as ContactSubmission,
   SubmissionStatus,
+  ResourceRow as Resource,
+  ResourceCategory,
+  ResourceKind,
+  ResourceScope,
+  ResourceStatus,
 } from "./database";
 
 /**

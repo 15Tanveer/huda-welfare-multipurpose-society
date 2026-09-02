@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BookMarked,
   Calendar,
   Image as ImageIcon,
   LayoutDashboard,
@@ -17,6 +18,7 @@ import { logoutAdmin } from "@/actions/auth";
 const LINKS = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/programs", label: "Programs", icon: Calendar },
+  { href: "/admin/resources", label: "Resources", icon: BookMarked },
   { href: "/admin/gallery", label: "Gallery", icon: ImageIcon },
   { href: "/admin/team", label: "Team", icon: UsersRound },
   { href: "/admin/volunteers", label: "Volunteer Requests", icon: Users },

@@ -5,10 +5,11 @@ interface LogoProps {
   shortName?: string;
   /**
    * "mark" (default) — compact ring+monogram badge next to a separate,
-   * crisply-scalable text lockup. Used in the footer.
+   * crisply-scalable text lockup. Not currently used by any page, kept
+   * as a lighter-weight option for a future tight-space placement.
    * "full" — the complete circular badge (public/branding/logo.svg),
-   * with the wordmark and subtitle baked into the artwork. Used in the
-   * header, where there's room for it to read as a proper seal.
+   * with the wordmark and subtitle baked into the artwork. Used in both
+   * the header and footer, so the same official asset appears everywhere.
    */
   variant?: "mark" | "full";
 }
