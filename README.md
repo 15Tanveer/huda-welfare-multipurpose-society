@@ -126,8 +126,15 @@ This runs everything in `supabase/migrations/`:
   `contact_submissions`, `newsletter_subscribers`, `site_settings`.
 - `0002_rls.sql` — Row Level Security policies (see [Security](#7-security))
   and creates the public `media` Storage bucket.
+- `0003_grants.sql` — baseline table-level `GRANT`s for `anon` and
+  `authenticated`. RLS policies alone aren't enough — Postgres also
+  requires these before RLS is even evaluated, and creating tables via
+  plain SQL (as `0001_init.sql` does) doesn't set them up the way the
+  Supabase Dashboard's table editor does automatically. **Without this
+  file, every read and write returns "permission denied" (`42501`)
+  regardless of the RLS policies in `0002_rls.sql`.**
 
-Alternatively, paste the contents of both files, in order, into the
+Alternatively, paste the contents of all three files, in order, into the
 Supabase Dashboard's SQL Editor and run them.
 
 ### 4.5 Seed neutral starting data (optional but recommended)
