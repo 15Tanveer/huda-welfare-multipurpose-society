@@ -34,7 +34,7 @@ export function Header({ shortName }: { shortName: string }) {
             scrolled ? "py-2.5" : "py-4"
           }`}
         >
-          <Logo shortName={shortName} />
+          <Logo shortName={shortName} variant="full" />
 
           <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => {

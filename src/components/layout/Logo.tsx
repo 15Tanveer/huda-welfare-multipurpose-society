@@ -1,7 +1,37 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/icons/LogoMark";
 
-export function Logo({ shortName = "HUDA" }: { shortName?: string }) {
+interface LogoProps {
+  shortName?: string;
+  /**
+   * "mark" (default) — compact ring+monogram badge next to a separate,
+   * crisply-scalable text lockup. Used in the footer.
+   * "full" — the complete circular badge (public/branding/logo.svg),
+   * with the wordmark and subtitle baked into the artwork. Used in the
+   * header, where there's room for it to read as a proper seal.
+   */
+  variant?: "mark" | "full";
+}
+
+export function Logo({ shortName = "HUDA", variant = "mark" }: LogoProps) {
+  if (variant === "full") {
+    return (
+      <Link
+        href="/"
+        className="flex items-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- local
+            static SVG; next/image's optimizer rejects SVG unless
+            images.dangerouslyAllowSVG is set, which isn't needed here */}
+        <img
+          src="/branding/logo.svg"
+          alt={`${shortName} Welfare & Educational Multipurpose Society`}
+          className="h-12 w-12 sm:h-14 sm:w-14"
+        />
+      </Link>
+    );
+  }
+
   return (
     <Link
       href="/"
