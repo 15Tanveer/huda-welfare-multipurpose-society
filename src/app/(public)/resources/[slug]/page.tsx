@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, CalendarClock, Info, MapPin } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CalendarClock, Info, MapPin } from "lucide-react";
 import { getAllActiveResourceSlugs, getResourceBySlug } from "@/lib/data/resources";
 import {
   resourceCategoryLabel,
@@ -57,6 +58,14 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
   return (
     <Container className="flex flex-col gap-10 py-12 sm:py-16">
       <div className="flex flex-col gap-4">
+        <Link
+          href="/resources"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-brand-deep transition-colors hover:text-brand"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to Resources
+        </Link>
+
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center rounded-full bg-brand-light px-2.5 py-1 text-xs font-medium text-brand-deep">
             {resourceTypeLabel(resource.resource_type)}

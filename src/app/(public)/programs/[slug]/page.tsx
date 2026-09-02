@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock, MapPin, Tag } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, MapPin, Tag } from "lucide-react";
 import {
   getAllProgramSlugs,
   getProgramBySlug,
@@ -98,6 +99,14 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
 
       <Container className="flex flex-col gap-10 py-12 sm:py-16">
         <div className="flex flex-col gap-4">
+          <Link
+            href="/programs"
+            className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-brand-deep transition-colors hover:text-brand"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Back to Programs
+          </Link>
+
           <div className="flex flex-wrap items-center gap-3">
             <StatusBadge status={program.status} />
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-brand">
