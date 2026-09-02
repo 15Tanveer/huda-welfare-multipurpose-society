@@ -14,7 +14,11 @@ export function FormField({ label, htmlFor, error, hint, required, children }: F
     <div className="flex flex-col gap-1.5">
       <label htmlFor={htmlFor} className="text-sm font-medium text-brand-ink">
         {label}
-        {required ? <span className="ml-0.5 text-brand-gold">*</span> : null}
+        {required ? (
+          <span className="ml-0.5 text-red-600" aria-hidden="true">
+            *
+          </span>
+        ) : null}
       </label>
       {children}
       {hint && !error ? <p className="text-xs text-brand-muted">{hint}</p> : null}
