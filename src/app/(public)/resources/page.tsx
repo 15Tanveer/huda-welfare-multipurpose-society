@@ -7,6 +7,9 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ResourcesExplorer } from "@/components/resources/ResourcesExplorer";
 
+const DISCLAIMER =
+  "HUDA shares these resources to improve awareness and access to useful information. Eligibility and benefits are determined by the respective government department or organization.";
+
 export const metadata: Metadata = {
   title: "Resources & Opportunities",
   description:
@@ -23,18 +26,14 @@ export default async function ResourcesPage() {
         eyebrow="Resources"
         title="Resources & Opportunities"
         description="Discover useful government schemes, scholarships, programs and opportunities related to education, healthcare, skills, employment and community development."
-      />
+      >
+        <p className="flex max-w-2xl items-start gap-2 text-sm leading-relaxed text-white/70">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          {DISCLAIMER}
+        </p>
+      </PageHero>
 
       <Container className="flex flex-col gap-16 py-16 sm:py-20">
-        <div className="flex items-start gap-3 rounded-xl border border-brand-ink/8 bg-brand-light/30 p-4 text-sm leading-relaxed text-brand-muted">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-deep" aria-hidden="true" />
-          <p>
-            HUDA shares these resources to improve awareness and access to useful
-            information. Eligibility and benefits are determined by the respective
-            government department or organization.
-          </p>
-        </div>
-
         <ResourcesExplorer resources={resources} />
 
         <section className="flex flex-col gap-6">
