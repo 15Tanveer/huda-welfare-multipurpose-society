@@ -26,10 +26,13 @@ export function getSupabaseAnonKey(): string {
 }
 
 export function getSupabaseServiceRoleKey(): string {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // SUPABASE_SECRET_KEY is the name Vercel's native Supabase integration
+  // (and Supabase's newer API key system) uses in place of the legacy
+  // SUPABASE_SERVICE_ROLE_KEY — both grant the same RLS-bypassing access.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
   if (!key) {
     throw new Error(
-      "Missing SUPABASE_SERVICE_ROLE_KEY environment variable. See .env.example."
+      "Missing SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SECRET_KEY) environment variable. See .env.example."
     );
   }
   return key;
