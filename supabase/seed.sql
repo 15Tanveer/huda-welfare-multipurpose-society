@@ -7,11 +7,11 @@ insert into public.site_settings (
   1,
   'HUDA Welfare & Educational Multipurpose Society',
   'HUDA',
-  'Working together for education, healthcare, empowerment and community welfare.',
+  'Working across education, healthcare, skills, empowerment and community development to help create meaningful opportunities for people and communities.',
   'Hinganghat',
   'Maharashtra',
-  'To support community development through education, healthcare awareness, empowerment, skills and socially responsible initiatives.',
-  'To help build an educated, healthy, skilled and empowered community where people have greater access to opportunities and support.'
+  'To strengthen communities by improving access to education, healthcare awareness, skills, opportunities and social support through practical, inclusive and responsible initiatives.',
+  'To build informed, healthy, skilled and empowered communities where people have greater awareness, opportunities and support to improve their lives.'
 )
 on conflict (id) do nothing;
 
@@ -27,7 +27,7 @@ insert into public.programs (
   'HUDA Welfare & Educational Multipurpose Society is planning its first community program. Full details — including the venue and schedule — will be announced here as they are finalised.',
   '2026-09-20',
   'Hinganghat',
-  'community-welfare',
+  'community-rural-development',
   'upcoming',
   true
 )

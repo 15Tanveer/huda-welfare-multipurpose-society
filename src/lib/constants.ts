@@ -1,18 +1,10 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  GraduationCap,
-  HeartPulse,
-  Hammer,
-  Users,
-  Megaphone,
-  HandHeart,
-  Handshake,
-  Scale,
-  BookOpenCheck,
-  ShieldCheck,
-  Target,
-} from "lucide-react";
+import { Handshake, Scale, BookOpenCheck, Users, ShieldCheck, Target } from "lucide-react";
 import type { GalleryCategory, ProgramCategory } from "@/types/database";
+import { FOCUS_AREAS } from "@/lib/focus-areas";
+
+export { FOCUS_AREAS } from "@/lib/focus-areas";
+export type { FocusArea, FocusAreaSlug } from "@/lib/focus-areas";
 
 export const SITE_NAME = "HUDA Welfare & Educational Multipurpose Society";
 export const SITE_SHORT_NAME = "HUDA";
@@ -21,7 +13,7 @@ export const DEFAULT_SITE_SETTINGS = {
   organization_name: SITE_NAME,
   short_name: SITE_SHORT_NAME,
   tagline:
-    "Working together for education, healthcare, empowerment and community welfare.",
+    "Working across education, healthcare, skills, empowerment and community development to help create meaningful opportunities for people and communities.",
   registration_number: null,
   address: null,
   city: "Hinganghat",
@@ -36,9 +28,9 @@ export const DEFAULT_SITE_SETTINGS = {
   linkedin: null,
   google_maps_url: null,
   mission:
-    "To support community development through education, healthcare awareness, empowerment, skills and socially responsible initiatives.",
+    "To strengthen communities by improving access to education, healthcare awareness, skills, opportunities and social support through practical, inclusive and responsible initiatives.",
   vision:
-    "To help build an educated, healthy, skilled and empowered community where people have greater access to opportunities and support.",
+    "To build informed, healthy, skilled and empowered communities where people have greater awareness, opportunities and support to improve their lives.",
 } as const;
 
 export const NAV_LINKS = [
@@ -51,88 +43,25 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export interface FocusArea {
-  slug: ProgramCategory;
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-export const FOCUS_AREAS: FocusArea[] = [
-  {
-    slug: "education",
-    title: "Education & Career Guidance",
-    description:
-      "Helping students and families access educational guidance, opportunities, awareness and resources.",
-    icon: GraduationCap,
-  },
-  {
-    slug: "healthcare",
-    title: "Healthcare & Medical Camps",
-    description:
-      "Supporting preventive healthcare, medical awareness, health camps and access to basic health information.",
-    icon: HeartPulse,
-  },
-  {
-    slug: "skill-development",
-    title: "Skill Development",
-    description:
-      "Helping youth and community members develop practical, career-oriented and livelihood skills.",
-    icon: Hammer,
-  },
-  {
-    slug: "women-empowerment",
-    title: "Women Empowerment",
-    description:
-      "Supporting awareness, education, skill development and opportunities for women.",
-    icon: Users,
-  },
-  {
-    slug: "social-awareness",
-    title: "Social Awareness",
-    description:
-      "Organizing community awareness initiatives around education, health, government schemes and responsible citizenship.",
-    icon: Megaphone,
-  },
-  {
-    slug: "community-welfare",
-    title: "Community Welfare",
-    description:
-      "Supporting initiatives that improve the social and economic well-being of local communities.",
-    icon: HandHeart,
-  },
-];
-
+/**
+ * Program categories, gallery categories and volunteer interest areas all
+ * share the same six pillars (see src/lib/focus-areas.ts) plus a catch-all
+ * "Other" — derived here once so the labels shown across the site, the
+ * admin forms and the form-validation schemas can never drift apart.
+ */
 export const PROGRAM_CATEGORIES: { value: ProgramCategory; label: string }[] =
   [
-    { value: "education", label: "Education" },
-    { value: "healthcare", label: "Healthcare" },
-    { value: "skill-development", label: "Skill Development" },
-    { value: "women-empowerment", label: "Women Empowerment" },
-    { value: "social-awareness", label: "Social Awareness" },
-    { value: "community-welfare", label: "Community Welfare" },
-    { value: "other", label: "Other" },
+    ...FOCUS_AREAS.map((area) => ({ value: area.slug, label: area.title })),
+    { value: "other" as const, label: "Other" },
   ];
 
 export const GALLERY_CATEGORIES: { value: GalleryCategory; label: string }[] =
-  [
-    { value: "education", label: "Education" },
-    { value: "healthcare", label: "Healthcare" },
-    { value: "community", label: "Community" },
-    { value: "awareness", label: "Awareness" },
-    { value: "skill-development", label: "Skill Development" },
-    { value: "other", label: "Other" },
-  ];
+  PROGRAM_CATEGORIES;
 
 export const VOLUNTEER_AREAS = [
-  "Education",
-  "Healthcare",
-  "Skill Development",
-  "Women Empowerment",
-  "Social Awareness",
-  "Community Welfare",
+  ...FOCUS_AREAS.map((area) => area.title),
   "Other",
-] as const;
+] as unknown as [string, ...string[]];
 
 export interface ApproachPrinciple {
   title: string;
@@ -168,7 +97,7 @@ export const APPROACH_PRINCIPLES: ApproachPrinciple[] = [
   {
     title: "Transparency",
     description:
-      "Our activities, reports and outcomes will be documented and shared openly as programs are conducted.",
+      "Our activities, reports and outcomes are documented and shared openly as programs are conducted.",
     icon: ShieldCheck,
   },
   {

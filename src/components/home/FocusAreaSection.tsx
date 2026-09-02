@@ -8,8 +8,8 @@ export function FocusAreaSection() {
       <Container className="flex flex-col gap-10">
         <SectionHeading
           eyebrow="Our Focus Areas"
-          title="Where we intend to make a difference"
-          description="HUDA is organizing its work around six core areas of community welfare, guided by real needs on the ground in Hinganghat."
+          title="Six pillars of community impact"
+          description="HUDA's work is organized around six interconnected pillars — from education and health to skills, empowerment, community development and the environment."
         />
 
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-brand-ink/8 bg-brand-ink/8 sm:grid-cols-2 lg:grid-cols-3">

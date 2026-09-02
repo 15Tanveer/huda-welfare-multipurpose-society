@@ -16,9 +16,9 @@ export function Footer({ settings }: { settings: SiteSettings }) {
         <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
           <Logo shortName={settings.short_name} />
           <p className="max-w-xs text-sm leading-relaxed text-brand-muted">
-            A community welfare and educational organization based in{" "}
-            {location || "Hinganghat, Maharashtra"}, working towards education,
-            healthcare awareness, empowerment and social welfare.
+            Working towards education, healthcare, skills, empowerment and
+            sustainable community development in {location || "Hinganghat, Maharashtra"}{" "}
+            and surrounding communities.
           </p>
           <SocialLinks settings={settings} />
         </div>
@@ -42,13 +42,13 @@ export function Footer({ settings }: { settings: SiteSettings }) {
         <div className="flex flex-col gap-3">
           <h3 className="text-sm font-semibold text-brand-deep">Focus Areas</h3>
           <ul className="flex flex-col gap-2.5">
-            {FOCUS_AREAS.slice(0, 6).map((area) => (
+            {FOCUS_AREAS.map((area) => (
               <li key={area.slug}>
                 <Link
                   href="/our-work"
                   className="text-sm text-brand-muted transition-colors hover:text-brand-deep"
                 >
-                  {area.title}
+                  {area.shortTitle}
                 </Link>
               </li>
             ))}

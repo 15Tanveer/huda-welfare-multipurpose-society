@@ -1,4 +1,11 @@
 import { z } from "zod";
+import { FOCUS_AREAS } from "@/lib/focus-areas";
+import type { ProgramCategory } from "@/types/database";
+
+const CATEGORY_VALUES = [
+  ...FOCUS_AREAS.map((area) => area.slug),
+  "other",
+] as unknown as [ProgramCategory, ...ProgramCategory[]];
 
 const optionalText = z
   .string()
@@ -51,18 +58,7 @@ export const programFormSchema = z.object({
   venue: optionalText,
   address: optionalText,
   city: z.string().trim().min(2, "City is required.").max(100),
-  category: z.enum(
-    [
-      "education",
-      "healthcare",
-      "skill-development",
-      "women-empowerment",
-      "social-awareness",
-      "community-welfare",
-      "other",
-    ],
-    { error: "Please select a category." }
-  ),
+  category: z.enum(CATEGORY_VALUES, { error: "Please select a category." }),
   status: z.enum(["upcoming", "completed", "cancelled"]),
   registration_link: z
     .string()
@@ -128,14 +124,7 @@ export const galleryFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((v) => (v ? v : null)),
-  category: z.enum([
-    "education",
-    "healthcare",
-    "community",
-    "awareness",
-    "skill-development",
-    "other",
-  ]),
+  category: z.enum(CATEGORY_VALUES),
   program_id: z
     .string()
     .trim()

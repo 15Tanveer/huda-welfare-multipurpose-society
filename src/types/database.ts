@@ -13,22 +13,24 @@
 
 export type ProgramStatus = "upcoming" | "completed" | "cancelled";
 
+/**
+ * The six FocusAreaSlug values (see src/lib/focus-areas.ts) plus "other".
+ * Not imported directly from focus-areas.ts to avoid a client-facing
+ * database type depending on a module that also pulls in lucide-react
+ * icon components — kept in sync manually, matching the "hand-written
+ * mirror" convention of this whole file.
+ */
 export type ProgramCategory =
-  | "education"
-  | "healthcare"
-  | "skill-development"
-  | "women-empowerment"
-  | "social-awareness"
-  | "community-welfare"
+  | "education-career"
+  | "healthcare-wellness"
+  | "youth-skills-employment"
+  | "women-child-empowerment"
+  | "community-rural-development"
+  | "environment-social-awareness"
   | "other";
 
-export type GalleryCategory =
-  | "education"
-  | "healthcare"
-  | "community"
-  | "awareness"
-  | "skill-development"
-  | "other";
+/** Gallery photos use the same six pillars as programs, plus "other". */
+export type GalleryCategory = ProgramCategory;
 
 export type SubmissionStatus = "new" | "contacted" | "read" | "archived";
 

@@ -27,8 +27,8 @@ export function GetInvolvedSection() {
       <Container className="flex flex-col gap-10 rounded-3xl border border-brand/15 bg-brand-light/40 px-6 py-12 sm:px-10 sm:py-14">
         <SectionHeading
           eyebrow="Get Involved"
-          title="Be part of HUDA from the very beginning"
-          description="As a new organization, every early volunteer, partner and well-wisher makes a real difference to what we can achieve."
+          title="Be part of meaningful community action"
+          description="Whether you contribute your time, skills, professional expertise or ideas, there are many ways to support HUDA's community initiatives."
         />
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
