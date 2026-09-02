@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin/AdminShell";
+
+// Defense in depth: every admin page already sets its own noindex metadata,
+// this is a safe default for the route group in case a future page forgets.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminDashboardLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();

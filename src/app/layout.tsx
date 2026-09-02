@@ -34,13 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       siteName: name,
+      url: "/",
       locale: "en_IN",
     },
     twitter: {
       card: "summary_large_image",
-    },
-    icons: {
-      icon: "/favicon.ico",
     },
   };
 }
