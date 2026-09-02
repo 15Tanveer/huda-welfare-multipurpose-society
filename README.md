@@ -98,6 +98,17 @@ sections (programs, gallery, forms, admin) degrade to their empty states
 and the admin area stays locked, so `pnpm dev` and `pnpm build` both work
 before Supabase is configured.
 
+**Deploying on Vercel?** If you install the official [Supabase
+integration](https://vercel.com/integrations/supabase) on the project,
+it adds its own environment variables automatically (`SUPABASE_URL`,
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_ANON_KEY`,
+`SUPABASE_SECRET_KEY` / `SUPABASE_SERVICE_ROLE_KEY`, plus several
+`POSTGRES_*` ones this app doesn't use). `next.config.ts` and
+`src/lib/supabase/env.ts` already recognise those names, so you can skip
+setting `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
+`SUPABASE_SERVICE_ROLE_KEY` by hand in that case — only add
+`NEXT_PUBLIC_SITE_URL` yourself.
+
 ### 4.4 Run the database migrations
 
 Using the [Supabase CLI](https://supabase.com/docs/guides/cli):
@@ -170,9 +181,12 @@ checking. There is no separate `next lint` step (removed in Next.js 16) —
 
 1. Push this repository to GitHub.
 2. Import it in [Vercel](https://vercel.com/new).
-3. Add the four environment variables from `.env.example` in the Vercel
-   project's **Settings → Environment Variables** (set
-   `NEXT_PUBLIC_SITE_URL` to your production domain).
+3. Either install the [Vercel Supabase
+   integration](https://vercel.com/integrations/supabase) (recommended —
+   see the callout in §4.3, it wires up the Supabase variables for you),
+   or add the three Supabase variables from `.env.example` by hand. Either
+   way, also set `NEXT_PUBLIC_SITE_URL` to your production domain in
+   **Settings → Environment Variables**.
 4. Deploy. No further configuration is needed — there's no local-file
    database or long-running process, so it runs entirely on Vercel's
    serverless/edge infrastructure.

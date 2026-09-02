@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/constants";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { SiteSettings } from "@/types";
 
@@ -16,7 +16,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("site_settings")
       .select("*")
