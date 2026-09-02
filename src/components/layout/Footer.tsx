@@ -14,7 +14,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
     <footer className="border-t border-brand/10 bg-white">
       <Container className="grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
-          <Logo shortName={settings.short_name} />
+          <Logo shortName={settings.short_name} variant="full" />
           <p className="max-w-xs text-sm leading-relaxed text-brand-muted">
             Working towards education, healthcare, skills, empowerment and
             sustainable community development in {location || "Hinganghat, Maharashtra"}{" "}
