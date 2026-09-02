@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="huda-logo-title">
+  <title id="huda-logo-title">HUDA Welfare &amp; Educational Multipurpose Society</title>
+
+  <!-- Outer ring -->
+  <circle cx="120" cy="120" r="108" fill="none" stroke="#14532D" stroke-width="8" />
+  <!-- Inner accent ring -->
+  <circle cx="120" cy="120" r="97" fill="none" stroke="#C9A227" stroke-width="2.25" />
+
+  <!-- Wordmark -->
+  <text
+    x="120"
+    y="128"
+    text-anchor="middle"
+    font-family="Manrope, Inter, Arial, sans-serif"
+    font-weight="800"
+    font-size="44"
+    letter-spacing="2"
+    fill="#14532D"
+  >HUDA</text>
+
+  <!-- Divider -->
+  <line x1="60" y1="147" x2="99" y2="147" stroke="#C9A227" stroke-width="2" stroke-linecap="round" />
+  <circle cx="120" cy="147" r="3.5" fill="#C9A227" />
+  <line x1="141" y1="147" x2="180" y2="147" stroke="#C9A227" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Subtitle -->
+  <text
+    x="120"
+    y="163"
+    text-anchor="middle"
+    font-family="Manrope, Inter, Arial, sans-serif"
+    font-weight="700"
+    font-size="8.5"
+    letter-spacing="0.5"
+    fill="#14532D"
+  >WELFARE &amp; EDUCATIONAL</text>
+  <text
+    x="120"
+    y="176"
+    text-anchor="middle"
+    font-family="Manrope, Inter, Arial, sans-serif"
+    font-weight="700"
+    font-size="8.5"
+    letter-spacing="0.5"
+    fill="#14532D"
+  >MULTIPURPOSE SOCIETY</text>
+</svg>
