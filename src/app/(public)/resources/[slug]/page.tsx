@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { AlertTriangle, CalendarClock, Info, MapPin } from "lucide-react";
 import { getAllActiveResourceSlugs, getResourceBySlug } from "@/lib/data/resources";
 import {
-  officialLinkCtaLabel,
   resourceCategoryLabel,
   resourceScopeLabel,
   resourceTypeLabel,
@@ -75,6 +74,10 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           {resource.title}
         </h1>
 
+        <p className="max-w-2xl text-base leading-relaxed text-brand-muted">
+          {resource.short_description}
+        </p>
+
         {resource.provided_by ? (
           <p className="text-sm text-brand-muted">
             <span className="font-medium text-brand-ink">Provided by: </span>
@@ -82,20 +85,52 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           </p>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-4 pt-2">
-          {resource.official_url ? (
-            <Button href={resource.official_url} target="_blank" rel="noopener noreferrer" size="lg">
-              {officialLinkCtaLabel(resource.resource_type)}
-            </Button>
+        {resource.audience_tags.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-brand-ink">Who it&apos;s for:</span>
+            {resource.audience_tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center rounded-full border border-brand-ink/10 bg-white px-2.5 py-1 text-xs font-medium text-brand-deep"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-wrap items-center gap-4">
+            {resource.application_url ? (
+              <>
+                <Button href={resource.application_url} target="_blank" rel="noopener noreferrer" size="lg">
+                  Apply on Official Portal ↗
+                </Button>
+                {resource.official_url ? (
+                  <Button href={resource.official_url} target="_blank" rel="noopener noreferrer" variant="outline" size="lg">
+                    View Official Information ↗
+                  </Button>
+                ) : null}
+              </>
+            ) : resource.official_url ? (
+              <Button href={resource.official_url} target="_blank" rel="noopener noreferrer" size="lg">
+                View Official Information ↗
+              </Button>
+            ) : null}
+            <ShareButtons title={resource.title} url={pageUrl} />
+          </div>
+          {resource.application_url || resource.official_url ? (
+            <p className="text-xs text-brand-muted">
+              You&apos;ll continue to an official government website.
+            </p>
           ) : null}
-          <ShareButtons title={resource.title} url={pageUrl} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.6fr_1fr]">
         <div className="flex flex-col gap-10">
           <DetailSection title="Overview" content={resource.description} />
-          <DetailSection title="Who Can Benefit" content={resource.audience} />
+          <DetailSection title="Who Is This For?" content={resource.audience} />
           <DetailSection title="Eligibility" content={resource.eligibility} />
           <DetailSection title="Benefits" content={resource.benefits} />
           <DetailSection title="Documents Required" content={resource.documents_required} />
@@ -116,7 +151,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
                 variant="outline"
                 className="self-start"
               >
-                {officialLinkCtaLabel(resource.resource_type)}
+                View Official Information ↗
               </Button>
             </div>
           ) : null}

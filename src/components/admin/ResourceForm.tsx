@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { ResourceRow } from "@/types/database";
 import {
+  AUDIENCE_TAGS,
   RESOURCE_CATEGORIES,
   RESOURCE_SCOPES,
   RESOURCE_STATUSES,
@@ -169,8 +170,8 @@ export function ResourceForm({
           <input id="provided_by" name="provided_by" defaultValue={resource?.provided_by ?? ""} className={inputClasses} />
         </FormField>
 
-        <div className="lg:col-span-1 sm:col-span-2">
-          <FormField label="Official Link" htmlFor="official_url" error={errors.official_url?.[0]} hint="The official government page — HUDA never hosts an application form">
+        <div className="sm:col-span-2 lg:col-span-1">
+          <FormField label="Official Source Link" htmlFor="official_url" error={errors.official_url?.[0]} hint="The official government information page — HUDA never hosts an application form">
             <input
               id="official_url"
               name="official_url"
@@ -178,6 +179,41 @@ export function ResourceForm({
               defaultValue={resource?.official_url ?? ""}
               className={inputClasses}
               placeholder="https://"
+            />
+          </FormField>
+        </div>
+
+        <div className="sm:col-span-2 lg:col-span-2">
+          <FormField
+            label="Application URL (optional)"
+            htmlFor="application_url"
+            error={errors.application_url?.[0]}
+            hint="Only fill this in once you've verified it's the current application destination — Maharashtra has moved several schemes to MahaDBT 2.0, so an old link may be wrong. Leave blank to show 'View Official Information' instead of 'Apply Now'."
+          >
+            <input
+              id="application_url"
+              name="application_url"
+              type="url"
+              defaultValue={resource?.application_url ?? ""}
+              className={inputClasses}
+              placeholder="https://"
+            />
+          </FormField>
+        </div>
+
+        <div className="sm:col-span-2">
+          <FormField
+            label="Audience Tags (optional)"
+            htmlFor="audience_tags"
+            error={errors.audience_tags?.[0]}
+            hint={`Comma-separated. Suggested: ${AUDIENCE_TAGS.join(", ")}`}
+          >
+            <input
+              id="audience_tags"
+              name="audience_tags"
+              defaultValue={resource?.audience_tags?.join(", ") ?? ""}
+              className={inputClasses}
+              placeholder="Students, Women, General Citizens"
             />
           </FormField>
         </div>

@@ -48,18 +48,6 @@ export const RESOURCE_TYPES: { value: ResourceKind; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
-/** Resource types whose official CTA reads "Apply" rather than "Visit". */
-const APPLY_TYPES: ResourceKind[] = [
-  "government-scheme",
-  "scholarship",
-  "training-program",
-  "employment-opportunity",
-];
-
-export function officialLinkCtaLabel(resourceType: ResourceKind): string {
-  return APPLY_TYPES.includes(resourceType) ? "Apply on Official Portal" : "Visit Official Website";
-}
-
 export type ResourceScope = "central" | "maharashtra" | "other";
 
 export const RESOURCE_SCOPES: { value: ResourceScope; label: string }[] = [
@@ -81,6 +69,26 @@ export const RESOURCE_STATUSES: { value: ResourceStatus; label: string }[] = [
   { value: "needs-verification", label: "Needs Verification" },
   { value: "archived", label: "Archived" },
 ];
+
+/**
+ * Suggested audience tags shown as quick-pick chips in the admin form and
+ * rendered as scan-friendly chips on public resource cards/detail pages.
+ * Deliberately a plain string list, not a DB enum/CHECK constraint — a
+ * resource can carry any combination, and new tags don't need a migration.
+ */
+export const AUDIENCE_TAGS = [
+  "Students",
+  "Parents",
+  "Women",
+  "Youth",
+  "Job Seekers",
+  "Farmers",
+  "Senior Citizens",
+  "Persons with Disabilities",
+  "Artisans",
+  "Entrepreneurs",
+  "General Citizens",
+] as const;
 
 export function resourceCategoryLabel(value: string): string {
   return RESOURCE_CATEGORIES.find((c) => c.value === value)?.label ?? "Other Opportunities";
