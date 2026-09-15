@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState, type ChangeEvent } from "react";
 import { Loader2 } from "lucide-react";
 import type { ProgramRow } from "@/types/database";
 import { PROGRAM_CATEGORIES } from "@/lib/constants";
@@ -26,6 +26,83 @@ function slugify(value: string) {
     .replace(/-+/g, "-");
 }
 
+// Plain text/number/date fields kept as controlled inputs, backed by this
+// object, rather than `defaultValue`. React resets every *uncontrolled*
+// form field after a form action call resolves — including on a failed
+// validation attempt — so with `defaultValue` a rejected submission
+// silently wiped everything the admin had typed except the handful of
+// fields (slug, status, cover image) that already happened to be
+// controlled. Controlled fields are immune to that reset: their value
+// always comes back from this state, which nothing here clears on
+// failure.
+interface TextFieldValues {
+  title: string;
+  short_description: string;
+  description: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  venue: string;
+  address: string;
+  city: string;
+  registration_link: string;
+  summary: string;
+  objectives: string;
+  activities: string;
+  outcomes: string;
+  participant_count: string;
+  volunteer_count: string;
+  beneficiary_count: string;
+}
+
+function initialTextValues(program?: ProgramRow): TextFieldValues {
+  return {
+    title: program?.title ?? "",
+    short_description: program?.short_description ?? "",
+    description: program?.description ?? "",
+    date: program?.date ?? "",
+    start_time: program?.start_time ?? "",
+    end_time: program?.end_time ?? "",
+    venue: program?.venue ?? "",
+    address: program?.address ?? "",
+    city: program?.city ?? "Hinganghat",
+    registration_link: program?.registration_link ?? "",
+    summary: program?.summary ?? "",
+    objectives: program?.objectives ?? "",
+    activities: program?.activities ?? "",
+    outcomes: program?.outcomes ?? "",
+    participant_count: program?.participant_count?.toString() ?? "",
+    volunteer_count: program?.volunteer_count?.toString() ?? "",
+    beneficiary_count: program?.beneficiary_count?.toString() ?? "",
+  };
+}
+
+// Field order matches the form's visual top-to-bottom layout, so scrolling
+// to the first key present in fieldErrors lands on whichever invalid
+// field actually appears first on the page.
+const FIELD_ORDER = [
+  "title",
+  "slug",
+  "short_description",
+  "description",
+  "date",
+  "start_time",
+  "end_time",
+  "venue",
+  "address",
+  "city",
+  "category",
+  "status",
+  "registration_link",
+  "summary",
+  "objectives",
+  "activities",
+  "outcomes",
+  "participant_count",
+  "volunteer_count",
+  "beneficiary_count",
+];
+
 export function ProgramForm({
   program,
   action,
@@ -40,10 +117,29 @@ export function ProgramForm({
   const [slug, setSlug] = useState(program?.slug ?? "");
   const [coverImage, setCoverImage] = useState<string | null>(program?.cover_image ?? null);
   const [status, setStatus] = useState(program?.status ?? "upcoming");
+  const [category, setCategory] = useState(program?.category ?? "community-rural-development");
+  const [featured, setFeatured] = useState(program?.featured ?? false);
+  const [values, setValues] = useState<TextFieldValues>(() => initialTextValues(program));
 
   const errors = state.fieldErrors ?? {};
   const draftId = useId().replace(/[^a-zA-Z0-9]/g, "");
   const tempIdForUpload = program?.id ?? `draft-${draftId}`;
+
+  const lastErrorState = useRef<ActionResult | undefined>(undefined);
+  useEffect(() => {
+    if (state === lastErrorState.current) return;
+    lastErrorState.current = state;
+    if (!state.fieldErrors) return;
+    const firstInvalidField = FIELD_ORDER.find((name) => state.fieldErrors?.[name]);
+    if (!firstInvalidField) return;
+    const el = document.getElementById(firstInvalidField);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el?.focus();
+  }, [state]);
+
+  const setField = (key: keyof TextFieldValues) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setValues((v) => ({ ...v, [key]: e.target.value }));
+  };
 
   return (
     <form action={formAction} className="flex flex-col gap-8">
@@ -52,10 +148,11 @@ export function ProgramForm({
           <input
             id="title"
             name="title"
-            defaultValue={program?.title}
+            value={values.title}
             required
             className={inputClasses}
             onChange={(e) => {
+              setField("title")(e);
               if (!slugEdited) setSlug(slugify(e.target.value));
             }}
           />
@@ -86,9 +183,10 @@ export function ProgramForm({
             <input
               id="short_description"
               name="short_description"
-              defaultValue={program?.short_description}
+              value={values.short_description}
               required
               className={inputClasses}
+              onChange={setField("short_description")}
             />
           </FormField>
         </div>
@@ -99,9 +197,10 @@ export function ProgramForm({
               id="description"
               name="description"
               rows={5}
-              defaultValue={program?.description}
+              value={values.description}
               required
               className={inputClasses}
+              onChange={setField("description")}
             />
           </FormField>
         </div>
@@ -113,9 +212,10 @@ export function ProgramForm({
             id="date"
             name="date"
             type="date"
-            defaultValue={program?.date}
+            value={values.date}
             required
             className={inputClasses}
+            onChange={setField("date")}
           />
         </FormField>
         <FormField label="Start Time" htmlFor="start_time" error={errors.start_time?.[0]}>
@@ -123,8 +223,9 @@ export function ProgramForm({
             id="start_time"
             name="start_time"
             type="time"
-            defaultValue={program?.start_time ?? ""}
+            value={values.start_time}
             className={inputClasses}
+            onChange={setField("start_time")}
           />
         </FormField>
         <FormField label="End Time" htmlFor="end_time" error={errors.end_time?.[0]}>
@@ -132,17 +233,30 @@ export function ProgramForm({
             id="end_time"
             name="end_time"
             type="time"
-            defaultValue={program?.end_time ?? ""}
+            value={values.end_time}
             className={inputClasses}
+            onChange={setField("end_time")}
           />
         </FormField>
 
         <FormField label="Venue" htmlFor="venue" error={errors.venue?.[0]}>
-          <input id="venue" name="venue" defaultValue={program?.venue ?? ""} className={inputClasses} />
+          <input
+            id="venue"
+            name="venue"
+            value={values.venue}
+            className={inputClasses}
+            onChange={setField("venue")}
+          />
         </FormField>
         <div className="lg:col-span-2">
           <FormField label="Address" htmlFor="address" error={errors.address?.[0]}>
-            <input id="address" name="address" defaultValue={program?.address ?? ""} className={inputClasses} />
+            <input
+              id="address"
+              name="address"
+              value={values.address}
+              className={inputClasses}
+              onChange={setField("address")}
+            />
           </FormField>
         </div>
 
@@ -150,9 +264,10 @@ export function ProgramForm({
           <input
             id="city"
             name="city"
-            defaultValue={program?.city ?? "Hinganghat"}
+            value={values.city}
             required
             className={inputClasses}
+            onChange={setField("city")}
           />
         </FormField>
 
@@ -160,9 +275,10 @@ export function ProgramForm({
           <select
             id="category"
             name="category"
-            defaultValue={program?.category ?? "community-rural-development"}
+            value={category}
             required
             className={inputClasses}
+            onChange={(e) => setCategory(e.target.value as typeof category)}
           >
             {PROGRAM_CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -196,9 +312,10 @@ export function ProgramForm({
             id="registration_link"
             name="registration_link"
             type="url"
-            defaultValue={program?.registration_link ?? ""}
+            value={values.registration_link}
             className={inputClasses}
             placeholder="https://"
+            onChange={setField("registration_link")}
           />
         </FormField>
 
@@ -206,7 +323,8 @@ export function ProgramForm({
           <input
             type="checkbox"
             name="featured"
-            defaultChecked={program?.featured ?? false}
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
             className="h-4 w-4 rounded border-brand-ink/30 text-brand focus:ring-brand"
           />
           Featured program
@@ -235,16 +353,44 @@ export function ProgramForm({
           </p>
 
           <FormField label="Summary" htmlFor="summary" error={errors.summary?.[0]}>
-            <textarea id="summary" name="summary" rows={3} defaultValue={program?.summary ?? ""} className={inputClasses} />
+            <textarea
+              id="summary"
+              name="summary"
+              rows={3}
+              value={values.summary}
+              className={inputClasses}
+              onChange={setField("summary")}
+            />
           </FormField>
           <FormField label="Objectives" htmlFor="objectives" error={errors.objectives?.[0]}>
-            <textarea id="objectives" name="objectives" rows={3} defaultValue={program?.objectives ?? ""} className={inputClasses} />
+            <textarea
+              id="objectives"
+              name="objectives"
+              rows={3}
+              value={values.objectives}
+              className={inputClasses}
+              onChange={setField("objectives")}
+            />
           </FormField>
           <FormField label="Activities" htmlFor="activities" error={errors.activities?.[0]}>
-            <textarea id="activities" name="activities" rows={3} defaultValue={program?.activities ?? ""} className={inputClasses} />
+            <textarea
+              id="activities"
+              name="activities"
+              rows={3}
+              value={values.activities}
+              className={inputClasses}
+              onChange={setField("activities")}
+            />
           </FormField>
           <FormField label="Outcomes" htmlFor="outcomes" error={errors.outcomes?.[0]}>
-            <textarea id="outcomes" name="outcomes" rows={3} defaultValue={program?.outcomes ?? ""} className={inputClasses} />
+            <textarea
+              id="outcomes"
+              name="outcomes"
+              rows={3}
+              value={values.outcomes}
+              className={inputClasses}
+              onChange={setField("outcomes")}
+            />
           </FormField>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -254,8 +400,9 @@ export function ProgramForm({
                 name="participant_count"
                 type="number"
                 min={0}
-                defaultValue={program?.participant_count ?? ""}
+                value={values.participant_count}
                 className={inputClasses}
+                onChange={setField("participant_count")}
               />
             </FormField>
             <FormField label="Volunteers" htmlFor="volunteer_count" error={errors.volunteer_count?.[0]}>
@@ -264,8 +411,9 @@ export function ProgramForm({
                 name="volunteer_count"
                 type="number"
                 min={0}
-                defaultValue={program?.volunteer_count ?? ""}
+                value={values.volunteer_count}
                 className={inputClasses}
+                onChange={setField("volunteer_count")}
               />
             </FormField>
             <FormField label="Beneficiaries" htmlFor="beneficiary_count" error={errors.beneficiary_count?.[0]}>
@@ -274,8 +422,9 @@ export function ProgramForm({
                 name="beneficiary_count"
                 type="number"
                 min={0}
-                defaultValue={program?.beneficiary_count ?? ""}
+                value={values.beneficiary_count}
                 className={inputClasses}
+                onChange={setField("beneficiary_count")}
               />
             </FormField>
           </div>
