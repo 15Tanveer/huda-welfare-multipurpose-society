@@ -7,16 +7,25 @@ const CATEGORY_VALUES = [
   "other",
 ] as unknown as [ProgramCategory, ...ProgramCategory[]];
 
+// `.nullable()` matters here beyond the usual "field left blank": the
+// Program Report fields (summary/objectives/.../beneficiary_count) only
+// render in the DOM when status is "completed" — for any other status,
+// `formData.get(name)` returns `null` (not `undefined`) because the input
+// doesn't exist at all. Without `.nullable()`, that `null` fails this
+// schema outright, which meant creating an "upcoming" or "cancelled"
+// program (i.e. anything but "completed") always failed validation.
 const optionalText = z
   .string()
   .trim()
   .max(4000)
+  .nullable()
   .optional()
   .or(z.literal(""))
   .transform((v) => (v ? v : null));
 
 const optionalCount = z
   .union([z.string(), z.number()])
+  .nullable()
   .optional()
   .or(z.literal(""))
   .transform((v) => {

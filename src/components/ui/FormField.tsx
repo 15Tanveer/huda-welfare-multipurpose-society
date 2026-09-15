@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 
 interface FormFieldProps {
   label: string;
@@ -7,6 +7,19 @@ interface FormFieldProps {
   hint?: string;
   required?: boolean;
   children: ReactNode;
+}
+
+/** Merges the error-state border into whatever className the field element
+ * already has, so every existing FormField call site gets a visible red
+ * border on the actual invalid input/select/textarea for free — not just
+ * the error text below it, which is easy to miss on a long form. */
+function withErrorStyling(children: ReactNode, hasError: boolean) {
+  if (!hasError || !isValidElement(children)) return children;
+  const element = children as ReactElement<{ className?: string }>;
+  return cloneElement(element, {
+    className: `${element.props.className ?? ""} border-red-500 focus:border-red-500 focus:ring-red-200`.trim(),
+    "aria-invalid": true,
+  } as { className: string; "aria-invalid": boolean });
 }
 
 export function FormField({ label, htmlFor, error, hint, required, children }: FormFieldProps) {
@@ -20,7 +33,7 @@ export function FormField({ label, htmlFor, error, hint, required, children }: F
           </span>
         ) : null}
       </label>
-      {children}
+      {withErrorStyling(children, Boolean(error))}
       {hint && !error ? <p className="text-xs text-brand-muted">{hint}</p> : null}
       {error ? (
         <p role="alert" className="text-xs font-medium text-red-600">
