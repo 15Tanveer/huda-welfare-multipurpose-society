@@ -4,6 +4,7 @@ import { Inter, Manrope } from "next/font/google";
 import { getSiteSettings } from "@/lib/settings";
 import { organizationJsonLd } from "@/lib/structured-data";
 import { getSiteUrl } from "@/lib/site-url";
+import { cityWithDistrict } from "@/lib/local-seo";
 import "./globals.css";
 
 const bodyFont = Inter({
@@ -25,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(getSiteUrl()),
     title: {
-      default: `${name} | ${settings.city}, ${settings.state}`,
+      default: `${name} | ${cityWithDistrict(settings.city)}, ${settings.state}`,
       template: `%s | ${settings.short_name}`,
     },
     description:

@@ -12,6 +12,7 @@ import { OurApproachSection } from "@/components/home/OurApproachSection";
 import { GetInvolvedSection } from "@/components/home/GetInvolvedSection";
 import { RecentProgramsSection } from "@/components/home/RecentProgramsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { cityWithDistrict } from "@/lib/local-seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     // without it this becomes "HUDA ... | HUDA" (the org's own short
     // name appended to its own full name).
     title: { absolute: `${settings.organization_name} | ${settings.city}` },
-    description: `${settings.short_name} is a community-focused organization in ${settings.city} working across education, healthcare, skills, empowerment, social welfare and community development.`,
+    description: `${settings.short_name} is a community-focused organization in ${cityWithDistrict(settings.city)} working across education, healthcare, skills, empowerment, social welfare and community development.`,
     alternates: { canonical: "/" },
   };
 }

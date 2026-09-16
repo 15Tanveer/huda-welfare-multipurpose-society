@@ -18,12 +18,13 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/Button";
 import { APPROACH_PRINCIPLES, FOCUS_AREAS } from "@/lib/constants";
+import { cityWithDistrict } from "@/lib/local-seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
     title: "About Us",
-    description: `Learn about ${settings.organization_name}, a community-focused organization based in ${settings.city}, ${settings.state} working across education, healthcare, skills, empowerment and community development.`,
+    description: `Learn about ${settings.organization_name}, a community-focused organization based in ${cityWithDistrict(settings.city)}, ${settings.state} working across education, healthcare, skills, empowerment and community development.`,
     alternates: { canonical: "/about" },
   };
 }
@@ -57,7 +58,7 @@ export default async function AboutPage() {
     { label: "Official Name", value: settings.organization_name, icon: Building2 },
     {
       label: "Location",
-      value: [settings.city, settings.state].filter(Boolean).join(", "),
+      value: [cityWithDistrict(settings.city), settings.state].filter(Boolean).join(", "),
       icon: MapPin,
     },
     {
@@ -76,7 +77,7 @@ export default async function AboutPage() {
       <PageHero
         eyebrow="About HUDA"
         title={`About ${settings.organization_name}`}
-        description={`A community-focused organization based in ${settings.city}, ${settings.state}.`}
+        description={`A community-focused organization based in ${cityWithDistrict(settings.city)}, ${settings.state}.`}
       />
 
       <Container className="flex flex-col gap-20 py-16 sm:py-20">
@@ -85,7 +86,7 @@ export default async function AboutPage() {
             <SectionHeading eyebrow="Introduction" title="Who we are" as="h2" />
             <p className="leading-relaxed text-brand-muted">
               {settings.organization_name} is a community-focused organization based in{" "}
-              {settings.city}, {settings.state}. HUDA works to support people and
+              {cityWithDistrict(settings.city)}, {settings.state}. HUDA works to support people and
               communities through education, healthcare awareness, skill development,
               empowerment, social welfare, rural development and responsible community
               initiatives.
