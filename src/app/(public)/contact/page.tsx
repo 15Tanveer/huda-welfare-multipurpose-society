@@ -6,12 +6,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { SocialLinks } from "@/components/layout/SocialLinks";
+import { cityWithDistrict } from "@/lib/local-seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
     title: "Contact Us",
-    description: `Get in touch with ${settings.organization_name} in ${settings.city}, ${settings.state}.`,
+    description: `Get in touch with ${settings.organization_name} in ${cityWithDistrict(settings.city)}, ${settings.state}.`,
     alternates: { canonical: "/contact" },
   };
 }
@@ -29,7 +30,7 @@ export default async function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Get in touch with HUDA"
-        description={`${settings.organization_name}, ${settings.city}, ${settings.state}, India.`}
+        description={`${settings.organization_name}, ${cityWithDistrict(settings.city)}, ${settings.state}, India.`}
       />
 
       <Container className="grid grid-cols-1 gap-12 py-16 sm:py-20 lg:grid-cols-[0.9fr_1.1fr]">

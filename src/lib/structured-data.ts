@@ -1,6 +1,7 @@
 import type { SiteSettings } from "@/types";
 import type { ProgramRow } from "@/types/database";
 import { getConfiguredSiteUrl } from "@/lib/site-url";
+import { HINGANGHAT_DISTRICT, isHinganghat } from "@/lib/local-seo";
 
 /**
  * Builds Organization/NGO JSON-LD from real configured settings only.
@@ -29,6 +30,14 @@ export function organizationJsonLd(settings: SiteSettings) {
         }
       : undefined;
 
+  const areaServed = [
+    settings.city ? { "@type": "City", name: settings.city } : undefined,
+    isHinganghat(settings.city)
+      ? { "@type": "AdministrativeArea", name: HINGANGHAT_DISTRICT }
+      : undefined,
+    settings.state ? { "@type": "State", name: settings.state } : undefined,
+  ].filter((v): v is NonNullable<typeof v> => Boolean(v));
+
   return {
     "@context": "https://schema.org",
     "@type": "NGO",
@@ -39,6 +48,7 @@ export function organizationJsonLd(settings: SiteSettings) {
     email: settings.email ?? undefined,
     telephone: settings.phone ?? undefined,
     address,
+    ...(areaServed.length > 0 ? { areaServed } : {}),
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
