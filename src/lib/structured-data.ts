@@ -1,7 +1,8 @@
 import type { SiteSettings } from "@/types";
-import type { ProgramRow } from "@/types/database";
+import type { ProgramRow, ResourceRow } from "@/types/database";
 import { getConfiguredSiteUrl } from "@/lib/site-url";
 import { HINGANGHAT_DISTRICT, isHinganghat } from "@/lib/local-seo";
+import { resourceTypeLabel } from "@/lib/resources-config";
 
 /**
  * Builds Organization/NGO JSON-LD from real configured settings only.
@@ -85,5 +86,47 @@ export function programEventJsonLd(program: ProgramRow, settings: SiteSettings) 
       name: settings.organization_name,
       url: siteUrl,
     },
+  };
+}
+
+/**
+ * GovernmentService JSON-LD for a resource detail page (a government
+ * scheme, scholarship or similar opportunity HUDA curates). Built only
+ * from the resource's own real fields — never fabricates eligibility,
+ * benefit or provider details that the resource itself doesn't have.
+ */
+export function resourceJsonLd(resource: ResourceRow) {
+  const siteUrl = getConfiguredSiteUrl();
+
+  const areaServed =
+    resource.scope === "central"
+      ? { "@type": "Country", name: "India" }
+      : resource.scope === "maharashtra"
+        ? { "@type": "State", name: "Maharashtra" }
+        : resource.state
+          ? { "@type": "State", name: resource.state }
+          : undefined;
+
+  const audienceType =
+    resource.audience ?? (resource.audience_tags.length > 0 ? resource.audience_tags.join(", ") : undefined);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "GovernmentService",
+    name: resource.title,
+    description: resource.short_description,
+    serviceType: resourceTypeLabel(resource.resource_type),
+    provider: resource.provided_by
+      ? {
+          "@type": "GovernmentOrganization",
+          name: resource.provided_by,
+          url: resource.official_url ?? undefined,
+        }
+      : undefined,
+    areaServed,
+    audience: audienceType
+      ? { "@type": "Audience", audienceType }
+      : undefined,
+    url: siteUrl ? `${siteUrl}/resources/${resource.slug}` : undefined,
   };
 }
