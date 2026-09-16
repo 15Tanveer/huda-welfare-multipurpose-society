@@ -10,6 +10,7 @@ import {
 } from "@/lib/resources-config";
 import { formatIsoDateLong, isPastDeadline } from "@/lib/format";
 import { getSiteUrl } from "@/lib/site-url";
+import { resourceJsonLd } from "@/lib/structured-data";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ShareButtons } from "@/components/programs/ShareButtons";
@@ -54,9 +55,15 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
   const deadlinePassed = resource.application_deadline
     ? isPastDeadline(resource.application_deadline)
     : false;
+  const jsonLd = resourceJsonLd(resource);
 
   return (
     <Container className="flex flex-col gap-10 py-12 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="flex flex-col gap-4">
         <Link
           href="/resources"
