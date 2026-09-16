@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Mail,
+  Send,
   Settings,
   Users,
   UsersRound,
@@ -23,6 +24,7 @@ const LINKS = [
   { href: "/admin/team", label: "Team", icon: UsersRound },
   { href: "/admin/volunteers", label: "Volunteer Requests", icon: Users },
   { href: "/admin/contacts", label: "Contact Messages", icon: Mail },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Send },
   { href: "/admin/settings", label: "Site Settings", icon: Settings },
 ];
 

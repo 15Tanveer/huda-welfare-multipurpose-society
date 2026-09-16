@@ -7,6 +7,7 @@ import {
   CalendarClock,
   Image as ImageIcon,
   Mail,
+  Send,
   ShieldAlert,
   Users,
 } from "lucide-react";
@@ -38,6 +39,7 @@ export default async function AdminDashboardPage() {
           value={stats.resourcesNeedingVerification}
           icon={ShieldAlert}
         />
+        <StatCard label="Newsletter Subscribers" value={stats.newsletterSubscribers} icon={Send} />
       </div>
 
       <div className="flex flex-wrap gap-3">

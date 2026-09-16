@@ -50,3 +50,13 @@ export async function deleteContactSubmission(id: string): Promise<ActionResult>
   revalidatePath("/admin/contacts");
   return { success: true, message: "Message deleted." };
 }
+
+export async function deleteNewsletterSubscriber(id: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.from("newsletter_subscribers").delete().eq("id", id);
+
+  if (error) return { success: false, message: "Could not remove this subscriber." };
+
+  revalidatePath("/admin/newsletter");
+  return { success: true, message: "Subscriber removed." };
+}
