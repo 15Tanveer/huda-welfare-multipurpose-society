@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Loader2 } from "lucide-react";
 import type { ResourceRow } from "@/types/database";
 import {
@@ -36,6 +36,77 @@ function toDateInputValue(iso: string | null) {
   return iso.slice(0, 10);
 }
 
+// Every plain text/textarea/url field is a controlled input backed by this
+// object, rather than `defaultValue` — see ProgramForm.tsx for why: React
+// resets uncontrolled fields after any form action call resolves,
+// including on a failed validation attempt, which would otherwise wipe
+// everything the admin typed except the handful of already-controlled
+// fields (slug, last_verified_at).
+interface TextFieldValues {
+  title: string;
+  short_description: string;
+  description: string;
+  state: string;
+  provided_by: string;
+  official_url: string;
+  application_url: string;
+  audience_tags: string;
+  audience: string;
+  eligibility: string;
+  benefits: string;
+  documents_required: string;
+  how_to_apply: string;
+  important_notes: string;
+  application_deadline: string;
+}
+
+function initialTextValues(resource?: ResourceRow): TextFieldValues {
+  return {
+    title: resource?.title ?? "",
+    short_description: resource?.short_description ?? "",
+    description: resource?.description ?? "",
+    state: resource?.state ?? "",
+    provided_by: resource?.provided_by ?? "",
+    official_url: resource?.official_url ?? "",
+    application_url: resource?.application_url ?? "",
+    audience_tags: resource?.audience_tags?.join(", ") ?? "",
+    audience: resource?.audience ?? "",
+    eligibility: resource?.eligibility ?? "",
+    benefits: resource?.benefits ?? "",
+    documents_required: resource?.documents_required ?? "",
+    how_to_apply: resource?.how_to_apply ?? "",
+    important_notes: resource?.important_notes ?? "",
+    application_deadline: resource?.application_deadline ? resource.application_deadline.slice(0, 16) : "",
+  };
+}
+
+// Field order matches the form's visual top-to-bottom layout, so scrolling
+// to the first key present in fieldErrors lands on whichever invalid
+// field actually appears first on the page.
+const FIELD_ORDER = [
+  "title",
+  "slug",
+  "short_description",
+  "description",
+  "resource_type",
+  "category",
+  "scope",
+  "state",
+  "provided_by",
+  "official_url",
+  "application_url",
+  "audience_tags",
+  "audience",
+  "eligibility",
+  "benefits",
+  "documents_required",
+  "how_to_apply",
+  "important_notes",
+  "status",
+  "application_deadline",
+  "last_verified_at",
+];
+
 export function ResourceForm({
   resource,
   action,
@@ -49,8 +120,30 @@ export function ResourceForm({
   const [slugEdited, setSlugEdited] = useState(Boolean(resource));
   const [slug, setSlug] = useState(resource?.slug ?? "");
   const [lastVerifiedAt, setLastVerifiedAt] = useState(toDateInputValue(resource?.last_verified_at ?? null));
+  const [resourceType, setResourceType] = useState(resource?.resource_type ?? "government-scheme");
+  const [category, setCategory] = useState(resource?.category ?? "education-scholarships");
+  const [scope, setScope] = useState(resource?.scope ?? "maharashtra");
+  const [status, setStatus] = useState(resource?.status ?? "active");
+  const [featured, setFeatured] = useState(resource?.featured ?? false);
+  const [values, setValues] = useState<TextFieldValues>(() => initialTextValues(resource));
 
   const errors = state.fieldErrors ?? {};
+
+  const lastState = useRef<ActionResult | undefined>(undefined);
+  useEffect(() => {
+    if (state === lastState.current) return;
+    lastState.current = state;
+    if (!state.fieldErrors) return;
+    const firstInvalidField = FIELD_ORDER.find((name) => state.fieldErrors?.[name]);
+    if (!firstInvalidField) return;
+    const el = document.getElementById(firstInvalidField);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el?.focus();
+  }, [state]);
+
+  const setField = (key: keyof TextFieldValues) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setValues((v) => ({ ...v, [key]: e.target.value }));
+  };
 
   return (
     <form action={formAction} className="flex flex-col gap-8">
@@ -59,10 +152,11 @@ export function ResourceForm({
           <input
             id="title"
             name="title"
-            defaultValue={resource?.title}
+            value={values.title}
             required
             className={inputClasses}
             onChange={(e) => {
+              setField("title")(e);
               if (!slugEdited) setSlug(slugify(e.target.value));
             }}
           />
@@ -93,9 +187,10 @@ export function ResourceForm({
             <input
               id="short_description"
               name="short_description"
-              defaultValue={resource?.short_description}
+              value={values.short_description}
               required
               className={inputClasses}
+              onChange={setField("short_description")}
             />
           </FormField>
         </div>
@@ -106,8 +201,9 @@ export function ResourceForm({
               id="description"
               name="description"
               rows={4}
-              defaultValue={resource?.description ?? ""}
+              value={values.description}
               className={inputClasses}
+              onChange={setField("description")}
             />
           </FormField>
         </div>
@@ -118,9 +214,10 @@ export function ResourceForm({
           <select
             id="resource_type"
             name="resource_type"
-            defaultValue={resource?.resource_type ?? "government-scheme"}
+            value={resourceType}
             required
             className={inputClasses}
+            onChange={(e) => setResourceType(e.target.value as typeof resourceType)}
           >
             {RESOURCE_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -134,9 +231,10 @@ export function ResourceForm({
           <select
             id="category"
             name="category"
-            defaultValue={resource?.category ?? "education-scholarships"}
+            value={category}
             required
             className={inputClasses}
+            onChange={(e) => setCategory(e.target.value as typeof category)}
           >
             {RESOURCE_CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -150,9 +248,10 @@ export function ResourceForm({
           <select
             id="scope"
             name="scope"
-            defaultValue={resource?.scope ?? "maharashtra"}
+            value={scope}
             required
             className={inputClasses}
+            onChange={(e) => setScope(e.target.value as typeof scope)}
           >
             {RESOURCE_SCOPES.map((s) => (
               <option key={s.value} value={s.value}>
@@ -163,11 +262,17 @@ export function ResourceForm({
         </FormField>
 
         <FormField label="State (optional)" htmlFor="state" error={errors.state?.[0]} hint="Only needed if Scope is not already specific enough">
-          <input id="state" name="state" defaultValue={resource?.state ?? ""} className={inputClasses} />
+          <input id="state" name="state" value={values.state} className={inputClasses} onChange={setField("state")} />
         </FormField>
 
         <FormField label="Provided By" htmlFor="provided_by" error={errors.provided_by?.[0]} hint="e.g. Ministry of Education, Government of Maharashtra">
-          <input id="provided_by" name="provided_by" defaultValue={resource?.provided_by ?? ""} className={inputClasses} />
+          <input
+            id="provided_by"
+            name="provided_by"
+            value={values.provided_by}
+            className={inputClasses}
+            onChange={setField("provided_by")}
+          />
         </FormField>
 
         <div className="sm:col-span-2 lg:col-span-1">
@@ -176,9 +281,10 @@ export function ResourceForm({
               id="official_url"
               name="official_url"
               type="url"
-              defaultValue={resource?.official_url ?? ""}
+              value={values.official_url}
               className={inputClasses}
               placeholder="https://"
+              onChange={setField("official_url")}
             />
           </FormField>
         </div>
@@ -194,9 +300,10 @@ export function ResourceForm({
               id="application_url"
               name="application_url"
               type="url"
-              defaultValue={resource?.application_url ?? ""}
+              value={values.application_url}
               className={inputClasses}
               placeholder="https://"
+              onChange={setField("application_url")}
             />
           </FormField>
         </div>
@@ -211,9 +318,10 @@ export function ResourceForm({
             <input
               id="audience_tags"
               name="audience_tags"
-              defaultValue={resource?.audience_tags?.join(", ") ?? ""}
+              value={values.audience_tags}
               className={inputClasses}
               placeholder="Students, Women, General Citizens"
+              onChange={setField("audience_tags")}
             />
           </FormField>
         </div>
@@ -228,22 +336,36 @@ export function ResourceForm({
         </p>
 
         <FormField label="Who Can Benefit (Audience)" htmlFor="audience" error={errors.audience?.[0]}>
-          <input id="audience" name="audience" defaultValue={resource?.audience ?? ""} className={inputClasses} />
+          <input id="audience" name="audience" value={values.audience} className={inputClasses} onChange={setField("audience")} />
         </FormField>
         <FormField label="Eligibility" htmlFor="eligibility" error={errors.eligibility?.[0]}>
-          <textarea id="eligibility" name="eligibility" rows={3} defaultValue={resource?.eligibility ?? ""} className={inputClasses} />
+          <textarea id="eligibility" name="eligibility" rows={3} value={values.eligibility} className={inputClasses} onChange={setField("eligibility")} />
         </FormField>
         <FormField label="Benefits" htmlFor="benefits" error={errors.benefits?.[0]}>
-          <textarea id="benefits" name="benefits" rows={3} defaultValue={resource?.benefits ?? ""} className={inputClasses} />
+          <textarea id="benefits" name="benefits" rows={3} value={values.benefits} className={inputClasses} onChange={setField("benefits")} />
         </FormField>
         <FormField label="Documents Required" htmlFor="documents_required" error={errors.documents_required?.[0]}>
-          <textarea id="documents_required" name="documents_required" rows={3} defaultValue={resource?.documents_required ?? ""} className={inputClasses} />
+          <textarea
+            id="documents_required"
+            name="documents_required"
+            rows={3}
+            value={values.documents_required}
+            className={inputClasses}
+            onChange={setField("documents_required")}
+          />
         </FormField>
         <FormField label="How to Apply" htmlFor="how_to_apply" error={errors.how_to_apply?.[0]}>
-          <textarea id="how_to_apply" name="how_to_apply" rows={3} defaultValue={resource?.how_to_apply ?? ""} className={inputClasses} />
+          <textarea id="how_to_apply" name="how_to_apply" rows={3} value={values.how_to_apply} className={inputClasses} onChange={setField("how_to_apply")} />
         </FormField>
         <FormField label="Important Notes" htmlFor="important_notes" error={errors.important_notes?.[0]}>
-          <textarea id="important_notes" name="important_notes" rows={3} defaultValue={resource?.important_notes ?? ""} className={inputClasses} />
+          <textarea
+            id="important_notes"
+            name="important_notes"
+            rows={3}
+            value={values.important_notes}
+            className={inputClasses}
+            onChange={setField("important_notes")}
+          />
         </FormField>
       </section>
 
@@ -252,9 +374,10 @@ export function ResourceForm({
           <select
             id="status"
             name="status"
-            defaultValue={resource?.status ?? "active"}
+            value={status}
             required
             className={inputClasses}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
           >
             {RESOURCE_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>
@@ -268,7 +391,8 @@ export function ResourceForm({
           <input
             type="checkbox"
             name="featured"
-            defaultChecked={resource?.featured ?? false}
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
             className="h-4 w-4 rounded border-brand-ink/30 text-brand focus:ring-brand"
           />
           Feature on homepage
@@ -284,8 +408,9 @@ export function ResourceForm({
             id="application_deadline"
             name="application_deadline"
             type="datetime-local"
-            defaultValue={resource?.application_deadline ? resource.application_deadline.slice(0, 16) : ""}
+            value={values.application_deadline}
             className={inputClasses}
+            onChange={setField("application_deadline")}
           />
         </FormField>
 
