@@ -5,6 +5,8 @@ export type {
   ProgramGalleryRow as ProgramGalleryItem,
   GalleryRow as GalleryItem,
   GalleryCategory,
+  GalleryMediaType,
+  GalleryVideoSource,
   TeamMemberRow as TeamMember,
   VolunteerSubmissionRow as VolunteerSubmission,
   ContactSubmissionRow as ContactSubmission,

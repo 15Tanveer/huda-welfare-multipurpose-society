@@ -29,8 +29,18 @@ export type ProgramCategory =
   | "environment-social-awareness"
   | "other";
 
-/** Gallery photos use the same six pillars as programs, plus "other". */
+/** Gallery items use the same six pillars as programs, plus "other". */
 export type GalleryCategory = ProgramCategory;
+
+/**
+ * What kind of media a gallery item holds. Deliberately separate from
+ * `GalleryCategory`: a newspaper clipping about a health camp is
+ * media_type "press" AND category "healthcare-wellness".
+ */
+export type GalleryMediaType = "photo" | "video" | "press";
+
+/** How a gallery video's URL should be embedded (see @/lib/gallery-media). */
+export type GalleryVideoSource = "youtube" | "instagram" | "facebook" | "external";
 
 export type SubmissionStatus = "new" | "contacted" | "read" | "archived";
 
@@ -90,7 +100,20 @@ export type GalleryRow = {
   title: string | null;
   caption: string | null;
   category: GalleryCategory;
-  image_path: string;
+  /**
+   * The card image for every media type: the photograph (photo), the
+   * clipping or screenshot (press), or the optional cover image (video).
+   * Nullable since a video may carry only a URL — a YouTube thumbnail is
+   * derived from that URL at render time instead.
+   */
+  image_path: string | null;
+  media_type: GalleryMediaType;
+  video_url: string | null;
+  video_source: GalleryVideoSource | null;
+  /** Publication / channel behind a press item, e.g. "Lokmat". */
+  source_name: string | null;
+  /** Optional link to the original online coverage for a press item. */
+  coverage_url: string | null;
   program_id: string | null;
   display_order: number;
   created_at: string;
@@ -98,9 +121,11 @@ export type GalleryRow = {
 
 export type GalleryInsert = Omit<
   GalleryRow,
-  "id" | "created_at" | "display_order"
+  "id" | "created_at" | "display_order" | "media_type"
 > &
-  Partial<Pick<GalleryRow, "id" | "created_at" | "display_order">>;
+  Partial<Pick<GalleryRow, "id" | "created_at" | "display_order" | "media_type">>;
+
+export type GalleryUpdate = Partial<GalleryInsert>;
 
 export type TeamMemberRow = {
   id: string;
@@ -276,7 +301,7 @@ export type Database = {
       gallery: {
         Row: GalleryRow;
         Insert: GalleryInsert;
-        Update: Partial<GalleryInsert>;
+        Update: GalleryUpdate;
         Relationships: [];
       };
       team_members: {

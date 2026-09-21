@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { FOCUS_AREAS } from "@/lib/focus-areas";
-import type { ProgramCategory } from "@/types/database";
+import { safeHttpUrl, youTubeVideoId } from "@/lib/gallery-media";
+import type { GalleryInsert, ProgramCategory } from "@/types/database";
 
 const CATEGORY_VALUES = [
   ...FOCUS_AREAS.map((area) => area.slug),
@@ -118,31 +119,206 @@ export const teamMemberFormSchema = z.object({
 
 export type TeamMemberFormInput = z.infer<typeof teamMemberFormSchema>;
 
-export const galleryFormSchema = z.object({
-  title: z
+/**
+ * A link an admin pasted. Stored as a plain URL and never as markup —
+ * embeds are generated from it at render time (see @/lib/gallery-media),
+ * and anything that isn't http(s) is rejected here.
+ */
+const optionalHttpUrl = (label: string) =>
+  z
     .string()
     .trim()
-    .max(200)
+    .max(1000)
     .optional()
     .or(z.literal(""))
-    .transform((v) => (v ? v : null)),
-  caption: z
-    .string()
-    .trim()
-    .max(500)
-    .optional()
-    .or(z.literal(""))
-    .transform((v) => (v ? v : null)),
-  category: z.enum(CATEGORY_VALUES),
-  program_id: z
-    .string()
-    .trim()
-    .optional()
-    .or(z.literal(""))
-    .transform((v) => (v ? v : null)),
-});
+    .transform((v) => (v ? v : null))
+    .refine((v) => v === null || safeHttpUrl(v) !== null, {
+      error: `${label} must be a valid link starting with http:// or https://`,
+    });
+
+const optionalStoragePath = z
+  .string()
+  .trim()
+  .max(500)
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v ? v : null));
+
+export const galleryFormSchema = z
+  .object({
+    // Defaulted so an older form post without the field — and every
+    // pre-existing gallery row — is still a valid photo.
+    media_type: z
+      .enum(["photo", "video", "press"] as const)
+      .nullable()
+      .optional()
+      .transform((v) => v ?? "photo"),
+    title: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v ? v : null)),
+    caption: z
+      .string()
+      .trim()
+      .max(500)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v ? v : null)),
+    category: z.enum(CATEGORY_VALUES),
+    program_id: z
+      .string()
+      .trim()
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v ? v : null)),
+    /** Photo, newspaper clipping, or a video's cover image. */
+    image_path: optionalStoragePath,
+    video_url: optionalHttpUrl("Video URL"),
+    video_source: z
+      .enum(["youtube", "instagram", "facebook", "external"] as const)
+      .nullable()
+      .optional()
+      .transform((v) => v ?? null),
+    source_name: z
+      .string()
+      .trim()
+      .max(150)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v ? v : null)),
+    coverage_url: optionalHttpUrl("Coverage URL"),
+  })
+  .superRefine((value, ctx) => {
+    const requireTitle = () => {
+      if (!value.title) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["title"],
+          message: "Title is required for this media type.",
+        });
+      }
+    };
+
+    if (value.media_type === "photo" && !value.image_path) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["image_path"],
+        message: "Please upload a photo first.",
+      });
+      return;
+    }
+
+    if (value.media_type === "press") {
+      requireTitle();
+      if (!value.image_path) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["image_path"],
+          message: "Please upload the coverage image (clipping or screenshot).",
+        });
+      }
+      return;
+    }
+
+    if (value.media_type === "video") {
+      requireTitle();
+      if (!value.video_url) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["video_url"],
+          message: "Video URL is required.",
+        });
+        return;
+      }
+      if (!value.video_source) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["video_source"],
+          message: "Please choose where this video is hosted.",
+        });
+        return;
+      }
+      // Guard against a source/URL mismatch (e.g. "YouTube" selected
+      // with an Instagram link), which would otherwise store a row the
+      // player can never embed.
+      const host = safeHttpUrl(value.video_url)?.hostname.replace(/^www\./, "").toLowerCase() ?? "";
+      if (value.video_source === "youtube" && !youTubeVideoId(value.video_url)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["video_url"],
+          message:
+            "That doesn't look like a YouTube link. Use youtube.com/watch?v=…, youtu.be/… or youtube.com/shorts/…",
+        });
+      }
+      if (value.video_source === "instagram" && !host.endsWith("instagram.com")) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["video_url"],
+          message: "That doesn't look like an Instagram link.",
+        });
+      }
+      if (
+        value.video_source === "facebook" &&
+        !host.endsWith("facebook.com") &&
+        host !== "fb.watch"
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["video_url"],
+          message: "That doesn't look like a Facebook link.",
+        });
+      }
+    }
+  });
 
 export type GalleryFormInput = z.infer<typeof galleryFormSchema>;
+
+/**
+ * Clears the fields that don't belong to the chosen media type, so
+ * switching an item from (say) Video to Photo doesn't leave a stale
+ * video URL behind on the row.
+ */
+export function normalizeGalleryInput(input: GalleryFormInput): GalleryInsert {
+  const base = {
+    media_type: input.media_type,
+    title: input.title,
+    caption: input.caption,
+    category: input.category,
+    program_id: input.program_id,
+    image_path: input.image_path,
+  };
+
+  if (input.media_type === "video") {
+    return {
+      ...base,
+      video_url: input.video_url,
+      video_source: input.video_source,
+      source_name: null,
+      coverage_url: null,
+    };
+  }
+
+  if (input.media_type === "press") {
+    return {
+      ...base,
+      video_url: null,
+      video_source: null,
+      source_name: input.source_name,
+      coverage_url: input.coverage_url,
+    };
+  }
+
+  return {
+    ...base,
+    video_url: null,
+    video_source: null,
+    source_name: null,
+    coverage_url: null,
+  };
+}
 
 export const siteSettingsFormSchema = z.object({
   organization_name: z.string().trim().min(3).max(200),
