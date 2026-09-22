@@ -8,6 +8,7 @@ import { GALLERY_MEDIA_TYPES } from "@/lib/gallery-media";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { inputClasses } from "@/components/ui/FormField";
 import { StickyFilterBar } from "@/components/ui/StickyFilterBar";
 import { ChipScroller, chipClasses, subChipClasses } from "@/components/ui/ChipScroller";
 import { MediaCard } from "@/components/gallery/MediaCard";
@@ -88,33 +89,59 @@ export function GalleryGrid({ items }: { items: GalleryRow[] }) {
           </ChipScroller>
         ) : null}
 
-        <ChipScroller label="Filter gallery by program area" role="tablist">
-          <button
-            role="tab"
-            aria-selected={category === "all"}
-            onClick={() => selectCategory("all")}
-            className={
-              showMediaFilter ? subChipClasses(category === "all") : chipClasses(category === "all")
-            }
+        {/* Program areas stay a select on small screens — seven long
+            labels read better in a dropdown than as chips — and keep the
+            chip row from `sm` up, where they fit. */}
+        <div className="sm:hidden">
+          <label htmlFor="gallery-category" className="sr-only">
+            Filter gallery by program area
+          </label>
+          <select
+            id="gallery-category"
+            value={category}
+            onChange={(e) => selectCategory(e.target.value)}
+            className={inputClasses}
           >
-            All Program Areas
-          </button>
-          {GALLERY_CATEGORIES.map((c) => (
+            <option value="all">All Program Areas</option>
+            {GALLERY_CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="hidden sm:block">
+          <ChipScroller label="Filter gallery by program area" role="tablist">
             <button
-              key={c.value}
               role="tab"
-              aria-selected={category === c.value}
-              onClick={() => selectCategory(c.value)}
+              aria-selected={category === "all"}
+              onClick={() => selectCategory("all")}
               className={
                 showMediaFilter
-                  ? subChipClasses(category === c.value)
-                  : chipClasses(category === c.value)
+                  ? subChipClasses(category === "all")
+                  : chipClasses(category === "all")
               }
             >
-              {c.label}
+              All Program Areas
             </button>
-          ))}
-        </ChipScroller>
+            {GALLERY_CATEGORIES.map((c) => (
+              <button
+                key={c.value}
+                role="tab"
+                aria-selected={category === c.value}
+                onClick={() => selectCategory(c.value)}
+                className={
+                  showMediaFilter
+                    ? subChipClasses(category === c.value)
+                    : chipClasses(category === c.value)
+                }
+              >
+                {c.label}
+              </button>
+            ))}
+          </ChipScroller>
+        </div>
       </StickyFilterBar>
 
       <Container className="py-8 sm:py-12">
