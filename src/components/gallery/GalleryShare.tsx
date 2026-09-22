@@ -1,49 +1,91 @@
 "use client";
 
-import { Check, Link2, Share2 } from "lucide-react";
+import { Check, Link2 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { FacebookIcon, LinkedinIcon, XIcon } from "@/components/icons/SocialIcons";
 import { useShareLink } from "@/components/gallery/use-share-link";
 
-// Labels on the two secondary controls are hidden below `sm` (their
-// icons and aria-labels carry the meaning there), so all three fit one
-// row on a 360px phone without shrinking the tap targets.
-const buttonClasses =
-  "inline-flex min-h-10 items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20";
+const iconButtonClasses =
+  "flex h-10 w-10 items-center justify-center rounded-full text-white transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60";
 
-/** The full share row inside the gallery lightbox. */
+/**
+ * The share row in the lightbox's details panel.
+ *
+ * Each button hands out HUDA's own link for the item
+ * (`/gallery?item=…`), never the YouTube or news URL, so a shared reel
+ * or clipping brings people to the site.
+ */
 export function GalleryShare({ url, title }: { url: string; title: string }) {
-  const { copied, copy, share, whatsappHref } = useShareLink(url, title);
+  const { copied, copy, share, hrefs } = useShareLink(url, title);
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
-      <button type="button" onClick={share} className={buttonClasses}>
-        <Share2 className="h-4 w-4" aria-hidden="true" />
-        Share
-      </button>
+    <div className="flex flex-wrap items-center gap-3">
+      <span className="text-sm font-medium text-white">Share this media</span>
 
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={buttonClasses}
-        aria-label="Share on WhatsApp"
-      >
-        <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />
-        <span className="hidden sm:inline">WhatsApp</span>
-      </a>
+      <div className="flex items-center gap-2">
+        {/* Opens the device's own share sheet where there is one; falls
+            back to copying the link where there isn't. */}
+        <button
+          type="button"
+          onClick={share}
+          aria-label="Share"
+          className={`${iconButtonClasses} bg-white/10 hover:bg-white/20`}
+        >
+          <Link2 className="h-4 w-4" aria-hidden="true" />
+        </button>
+
+        <a
+          href={hrefs.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on WhatsApp"
+          className={`${iconButtonClasses} bg-[#25D366]`}
+        >
+          <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />
+        </a>
+
+        <a
+          href={hrefs.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on Facebook"
+          className={`${iconButtonClasses} bg-[#1877F2]`}
+        >
+          <FacebookIcon className="h-4 w-4" aria-hidden="true" />
+        </a>
+
+        <a
+          href={hrefs.x}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on X"
+          className={`${iconButtonClasses} bg-black`}
+        >
+          <XIcon className="h-4 w-4" aria-hidden="true" />
+        </a>
+
+        <a
+          href={hrefs.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on LinkedIn"
+          className={`${iconButtonClasses} bg-[#0A66C2]`}
+        >
+          <LinkedinIcon className="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
 
       <button
         type="button"
         onClick={copy}
-        className={buttonClasses}
-        aria-label={copied ? "Link copied" : "Copy link"}
+        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 sm:ml-auto"
       >
         {copied ? (
           <Check className="h-4 w-4" aria-hidden="true" />
         ) : (
           <Link2 className="h-4 w-4" aria-hidden="true" />
         )}
-        <span className="hidden sm:inline">{copied ? "Copied" : "Copy link"}</span>
+        {copied ? "Copied" : "Copy Link"}
       </button>
     </div>
   );

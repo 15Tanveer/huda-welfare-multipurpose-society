@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Camera } from "lucide-react";
-import type { GalleryMediaType, GalleryRow } from "@/types/database";
+import type { GalleryMediaType, GalleryRow, ProgramRow } from "@/types/database";
 import { GALLERY_CATEGORIES } from "@/lib/constants";
 import { GALLERY_MEDIA_TYPES } from "@/lib/gallery-media";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -20,9 +20,12 @@ export function GalleryGrid({
   items,
   /** `?item=` from the URL — a shared link opens straight on that item. */
   initialItemId,
+  /** Linked programs, keyed by id, for the lightbox's context block. */
+  programs,
 }: {
   items: GalleryRow[];
   initialItemId?: string;
+  programs?: Record<string, ProgramRow>;
 }) {
   const [category, setCategory] = useState<string>("all");
   const [mediaType, setMediaType] = useState<MediaFilter>("all");
@@ -193,6 +196,7 @@ export function GalleryGrid({
           activeIndex={activeIndex}
           onClose={() => openItem(null)}
           onNavigate={openItem}
+          programs={programs}
         />
       ) : null}
     </>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getGalleryItemById, getGalleryItems } from "@/lib/data/gallery";
+import { getProgramsByIds } from "@/lib/data/programs";
 import { galleryItemLabel, galleryThumbnailUrl } from "@/lib/gallery-media";
 import { PageHero } from "@/components/layout/PageHero";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
@@ -55,6 +56,14 @@ export async function generateMetadata({ searchParams }: GalleryPageProps): Prom
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const [items, { item: itemId }] = await Promise.all([getGalleryItems(), searchParams]);
 
+  // The lightbox shows a linked program's date, location, beneficiaries
+  // and a link through to it, so the programs those items point at are
+  // fetched once here rather than per item.
+  const linkedPrograms = await getProgramsByIds(
+    items.map((i) => i.program_id).filter((id): id is string => Boolean(id))
+  );
+  const programs = Object.fromEntries(linkedPrograms.map((p) => [p.id, p]));
+
   return (
     <>
       <PageHero
@@ -65,7 +74,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
 
       {/* GalleryGrid renders its own sticky filter bar directly under the
           hero, then the grid inside a Container. */}
-      <GalleryGrid items={items} initialItemId={itemId} />
+      <GalleryGrid items={items} initialItemId={itemId} programs={programs} />
     </>
   );
 }

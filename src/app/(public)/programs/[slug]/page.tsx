@@ -167,7 +167,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
             <TextSection title="Program Highlights" content={program.activities} />
             <TextSection title="Outcomes" content={program.outcomes} />
 
-            <ProgramMediaSections media={media} programTitle={program.title} />
+            <ProgramMediaSections media={media} program={program} />
           </div>
 
           <aside className="flex flex-col gap-6">

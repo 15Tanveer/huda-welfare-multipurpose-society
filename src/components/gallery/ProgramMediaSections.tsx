@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { GalleryRow } from "@/types/database";
+import type { GalleryRow, ProgramRow } from "@/types/database";
 import type { ProgramMedia } from "@/lib/gallery-media";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { MediaCard } from "@/components/gallery/MediaCard";
@@ -31,11 +31,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  */
 export function ProgramMediaSections({
   media,
-  programTitle,
+  program,
 }: {
   media: ProgramMedia;
-  programTitle: string;
+  program: ProgramRow;
 }) {
+  const programTitle = program.title;
+  const programs = { [program.id]: program };
   const [active, setActive] = useState<ActiveItem | null>(null);
 
   const { photos, videos, press } = media;
@@ -106,6 +108,7 @@ export function ProgramMediaSections({
           activeIndex={active.index}
           onClose={() => setActive(null)}
           onNavigate={(index) => setActive({ scope: active.scope, index })}
+          programs={programs}
         />
       ) : null}
     </>
