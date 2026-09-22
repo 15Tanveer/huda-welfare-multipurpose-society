@@ -110,8 +110,12 @@ export type GalleryRow = {
   media_type: GalleryMediaType;
   video_url: string | null;
   video_source: GalleryVideoSource | null;
-  /** Publication / channel behind a press item, e.g. "Lokmat". */
+  /** The outlet behind the item — a publication or a news channel. */
   source_name: string | null;
+  /** Storage path of that outlet's logo, shown beside its name. */
+  source_logo_path: string | null;
+  /** The outlet's own page or channel (not the individual article). */
+  source_url: string | null;
   /** Optional link to the original online coverage for a press item. */
   coverage_url: string | null;
   program_id: string | null;

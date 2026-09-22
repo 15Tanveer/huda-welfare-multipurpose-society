@@ -117,6 +117,7 @@ export function GalleryLightbox({
   const CategoryIcon = FOCUS_AREAS.find((a) => a.slug === item.category)?.icon ?? null;
   const program = item.program_id ? programs[item.program_id] : undefined;
   const programCover = getPublicImageUrl(program?.cover_image ?? null);
+  const sourceLogo = getPublicImageUrl(item.source_logo_path);
   const hasArrows = items.length > 1;
 
   const externalLink =
@@ -309,27 +310,59 @@ export function GalleryLightbox({
               </>
             ) : null}
 
-            {externalLink ? (
+            {/* The outlet that carried the story, credited by name, mark
+                and a link through to their own channel where we have
+                one. Each piece renders only if it was actually filled
+                in. */}
+            {item.source_name || externalLink ? (
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
                 {item.source_name ? (
-                  <span className="min-w-0">
-                    <span className="block text-xs text-white/60">
-                      {item.media_type === "press" ? "Published by" : "Coverage by"}
+                  <div className="flex min-w-0 items-center gap-3">
+                    {sourceLogo ? (
+                      <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-white/10">
+                        <Image
+                          src={sourceLogo}
+                          alt={item.source_name}
+                          fill
+                          sizes="44px"
+                          className="object-cover"
+                        />
+                      </span>
+                    ) : null}
+                    <span className="min-w-0">
+                      <span className="block text-xs text-white/60">
+                        {item.media_type === "press" ? "Published by" : "Coverage by"}
+                      </span>
+                      {item.source_url ? (
+                        <a
+                          href={item.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-sm font-medium text-white underline-offset-4 hover:underline"
+                        >
+                          {item.source_name}
+                          <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <span className="block truncate text-sm font-medium text-white">
+                          {item.source_name}
+                        </span>
+                      )}
                     </span>
-                    <span className="block truncate text-sm font-medium text-white">
-                      {item.source_name}
-                    </span>
-                  </span>
+                  </div>
                 ) : null}
-                <a
-                  href={externalLink.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-deep"
-                >
-                  {externalLink.text}
-                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
+
+                {externalLink ? (
+                  <a
+                    href={externalLink.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-deep"
+                  >
+                    {externalLink.text}
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                ) : null}
               </div>
             ) : null}
 

@@ -21,6 +21,8 @@ function parseGalleryForm(formData: FormData) {
     video_url: formData.get("video_url"),
     video_source: formData.get("video_source"),
     source_name: formData.get("source_name"),
+    source_logo_path: formData.get("source_logo_path"),
+    source_url: formData.get("source_url"),
     coverage_url: formData.get("coverage_url"),
   });
 }

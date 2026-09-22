@@ -28,6 +28,7 @@ const FIELD_ORDER = [
   "image_path",
   "title",
   "source_name",
+  "source_url",
   "coverage_url",
   "category",
   "caption",
@@ -39,6 +40,7 @@ interface TextFieldValues {
   caption: string;
   video_url: string;
   source_name: string;
+  source_url: string;
   coverage_url: string;
 }
 
@@ -48,6 +50,7 @@ function initialTextValues(item?: GalleryRow): TextFieldValues {
     caption: item?.caption ?? "",
     video_url: item?.video_url ?? "",
     source_name: item?.source_name ?? "",
+    source_url: item?.source_url ?? "",
     coverage_url: item?.coverage_url ?? "",
   };
 }
@@ -80,6 +83,9 @@ export function GalleryMediaForm({
   const [category, setCategory] = useState(item?.category ?? "other");
   const [programId, setProgramId] = useState(item?.program_id ?? "");
   const [videoSource, setVideoSource] = useState(item?.video_source ?? "youtube");
+  const [sourceLogoPath, setSourceLogoPath] = useState<string | null>(
+    item?.source_logo_path ?? null
+  );
   const [values, setValues] = useState<TextFieldValues>(() => initialTextValues(item));
 
   const errors = state.fieldErrors ?? {};
@@ -96,6 +102,7 @@ export function GalleryMediaForm({
       setCategory("other");
       setProgramId("");
       setVideoSource("youtube");
+      setSourceLogoPath(null);
       setValues(initialTextValues());
     }
   }
@@ -267,43 +274,92 @@ export function GalleryMediaForm({
         </FormField>
       </div>
 
-      {isPress ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <FormField
-            label="Publication / Source (optional)"
-            htmlFor="source_name"
-            error={errors.source_name?.[0]}
-            hint="e.g. Anti Crime News, Lokmat, a local news channel"
-          >
-            <input
-              id="source_name"
-              name="source_name"
-              value={values.source_name}
-              className={inputClasses}
-              onChange={setField("source_name")}
-            />
-          </FormField>
+      {/* Crediting the outlet applies to a news video as much as to a
+          clipping — a channel that covers a HUDA programme is named,
+          shown and linked on both. */}
+      {isPress || isVideo ? (
+        <fieldset className="flex flex-col gap-5 rounded-xl border border-brand-ink/10 p-4">
+          <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-brand-deep">
+            {isPress ? "Publication credit" : "Channel credit"}
+          </legend>
 
-          <FormField
-            label="Coverage URL (optional)"
-            htmlFor="coverage_url"
-            error={errors.coverage_url?.[0]}
-            hint="Link to the original article, if it is online."
-          >
-            <input
-              id="coverage_url"
-              name="coverage_url"
-              type="url"
-              inputMode="url"
-              value={values.coverage_url}
-              className={inputClasses}
-              onChange={setField("coverage_url")}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <FormField
+              label={isPress ? "Publication / Source (optional)" : "Channel / Source (optional)"}
+              htmlFor="source_name"
+              error={errors.source_name?.[0]}
+              hint={
+                isPress
+                  ? "e.g. Anti Crime News, Lokmat"
+                  : "e.g. News Tempo — shown as \u201cCoverage by\u201d on the item"
+              }
+            >
+              <input
+                id="source_name"
+                name="source_name"
+                value={values.source_name}
+                className={inputClasses}
+                onChange={setField("source_name")}
+              />
+            </FormField>
+
+            <FormField
+              label={isPress ? "Publication page (optional)" : "Channel link (optional)"}
+              htmlFor="source_url"
+              error={errors.source_url?.[0]}
+              hint="Their own page or channel — not this particular story."
+            >
+              <input
+                id="source_url"
+                name="source_url"
+                type="url"
+                inputMode="url"
+                value={values.source_url}
+                className={inputClasses}
+                onChange={setField("source_url")}
+              />
+            </FormField>
+          </div>
+
+          <div>
+            <ImageUploader
+              label="Publication / channel logo (optional)"
+              value={sourceLogoPath}
+              onChange={setSourceLogoPath}
+              pathFor={galleryPath}
             />
-          </FormField>
-        </div>
+            <input type="hidden" name="source_logo_path" value={sourceLogoPath ?? ""} />
+            <p className="mt-1.5 text-xs text-brand-muted">
+              Shown beside the name on the item. A square logo works best.
+            </p>
+          </div>
+
+          {isPress ? (
+            <FormField
+              label="Coverage URL (optional)"
+              htmlFor="coverage_url"
+              error={errors.coverage_url?.[0]}
+              hint="Link to this particular article, if it is online."
+            >
+              <input
+                id="coverage_url"
+                name="coverage_url"
+                type="url"
+                inputMode="url"
+                value={values.coverage_url}
+                className={inputClasses}
+                onChange={setField("coverage_url")}
+              />
+            </FormField>
+          ) : (
+            <input type="hidden" name="coverage_url" value="" />
+          )}
+        </fieldset>
       ) : (
         <>
           <input type="hidden" name="source_name" value="" />
+          <input type="hidden" name="source_url" value="" />
+          <input type="hidden" name="source_logo_path" value="" />
           <input type="hidden" name="coverage_url" value="" />
         </>
       )}

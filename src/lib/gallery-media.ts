@@ -253,6 +253,8 @@ export function programGalleryAsMediaItem(
     video_url: null,
     video_source: null,
     source_name: null,
+    source_logo_path: null,
+    source_url: null,
     coverage_url: null,
     program_id: row.program_id,
     display_order: row.display_order,
