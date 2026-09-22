@@ -120,11 +120,13 @@ export function GalleryLightbox({
   const sourceLogo = getPublicImageUrl(item.source_logo_path);
   const hasArrows = items.length > 1;
 
+  // `shortText` is what the button shows on a phone, where the full
+  // label would squeeze the outlet's name beside it down to an ellipsis.
   const externalLink =
     item.media_type === "press" && item.coverage_url
-      ? { href: item.coverage_url, text: "View Original Coverage" }
+      ? { href: item.coverage_url, text: "View Original Coverage", shortText: "Read" }
       : item.media_type === "video" && item.video_url
-        ? { href: item.video_url, text: watchOriginalLabel(item) }
+        ? { href: item.video_url, text: watchOriginalLabel(item), shortText: "Watch" }
         : null;
 
   function goPrev() {
@@ -315,11 +317,15 @@ export function GalleryLightbox({
                 one. Each piece renders only if it was actually filled
                 in. */}
             {item.source_name || externalLink ? (
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+              // One row, never two: the credit sits left and the button
+              // right, both vertically centred against each other. The
+              // outlet name truncates rather than pushing the button
+              // onto a line of its own.
+              <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-4">
                 {item.source_name ? (
-                  <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
                     {sourceLogo ? (
-                      <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-white/10">
+                      <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-white/10 sm:h-11 sm:w-11">
                         <Image
                           src={sourceLogo}
                           alt={item.source_name}
@@ -330,7 +336,7 @@ export function GalleryLightbox({
                       </span>
                     ) : null}
                     <span className="min-w-0">
-                      <span className="block text-xs text-white/60">
+                      <span className="block whitespace-nowrap text-xs text-white/60">
                         {item.media_type === "press" ? "Published by" : "Coverage by"}
                       </span>
                       {item.source_url ? (
@@ -338,10 +344,10 @@ export function GalleryLightbox({
                           href={item.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm font-medium text-white underline-offset-4 hover:underline"
+                          className="flex min-w-0 items-center gap-1.5 text-sm font-medium text-white underline-offset-4 hover:underline"
                         >
-                          {item.source_name}
-                          <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span className="truncate">{item.source_name}</span>
+                          <ExternalLink className="hidden h-3.5 w-3.5 shrink-0 sm:block" aria-hidden="true" />
                         </a>
                       ) : (
                         <span className="block truncate text-sm font-medium text-white">
@@ -353,14 +359,18 @@ export function GalleryLightbox({
                 ) : null}
 
                 {externalLink ? (
+                  // `ml-auto` keeps it right-aligned even when there is
+                  // no credit beside it; `shrink-0` keeps the label on
+                  // one line at 360px.
                   <a
                     href={externalLink.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-deep"
+                    className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-medium text-white transition-colors hover:bg-brand-deep sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm"
                   >
-                    {externalLink.text}
-                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    <span className="sm:hidden">{externalLink.shortText}</span>
+                    <span className="hidden sm:inline">{externalLink.text}</span>
+                    <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
                   </a>
                 ) : null}
               </div>
