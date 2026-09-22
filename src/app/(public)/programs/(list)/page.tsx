@@ -21,10 +21,16 @@ interface ProgramsPageProps {
 
 export default async function ProgramsPage({ searchParams }: ProgramsPageProps) {
   const params = await searchParams;
-  const tab = params.tab === "past" ? "past" : "upcoming";
   const category = params.category;
 
   const [upcoming, past] = await Promise.all([getUpcomingPrograms(), getPastPrograms()]);
+
+  // A visitor who picked a tab keeps it, empty or not. With no choice in
+  // the URL the page opens on Upcoming — unless there is nothing
+  // upcoming and there are completed programs, in which case landing on
+  // an empty tab would hide the work that is actually there.
+  const chosenTab = params.tab === "past" || params.tab === "upcoming" ? params.tab : null;
+  const tab = chosenTab ?? (upcoming.length === 0 && past.length > 0 ? "past" : "upcoming");
   const activeList = tab === "past" ? past : upcoming;
   const filtered = category ? activeList.filter((p) => p.category === category) : activeList;
 
