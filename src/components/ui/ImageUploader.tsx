@@ -18,6 +18,30 @@ interface ImageUploaderProps {
   pathFor: (fileName: string) => string;
 }
 
+const NETWORK_FAILURE = /failed to fetch|network|load failed|timeout|aborted/i;
+const ALREADY_EXISTS = /already exists|duplicate|resource already/i;
+const SESSION_EXPIRED = /row-level security|jwt|unauthorized|not authenticated|403/i;
+const TOO_LARGE = /exceeded|too large|payload|413/i;
+
+/**
+ * Supabase's own wording is either opaque ("Failed to fetch") or
+ * internal ("new row violates row-level security policy"). An admin
+ * uploading a photo on a phone needs to know what to *do*, so each
+ * class of failure is translated into its next step, with the original
+ * reason kept for anything unrecognised.
+ */
+function describeUploadError(message: string): string {
+  if (!message) return "The upload didn't go through. Please try again.";
+  if (NETWORK_FAILURE.test(message)) {
+    return "Couldn't reach the server — check your connection and try again. If this page has been open a while, reload it and sign in again.";
+  }
+  if (SESSION_EXPIRED.test(message)) {
+    return "Your admin session has expired. Reload this page, sign in again, and re-upload.";
+  }
+  if (TOO_LARGE.test(message)) return "That file is too large to upload. Try one under 5MB.";
+  return message;
+}
+
 export function ImageUploader({ label, value, onChange, pathFor }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -39,15 +63,38 @@ export function ImageUploader({ label, value, onChange, pathFor }: ImageUploader
     try {
       const supabase = createClient();
       const path = pathFor(file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-"));
-      const { error: uploadError } = await supabase.storage
-        .from(MEDIA_BUCKET)
-        .upload(path, file, { upsert: false });
 
-      if (uploadError) {
-        setError(uploadError.message);
-        return;
+      // Two attempts, because the common failure here isn't the server
+      // refusing the file — it's the request never arriving: a phone
+      // dropping its connection mid-upload, or the auth token's refresh
+      // call failing on a page that has been open a while. Both surface
+      // as a bare "Failed to fetch", and both usually succeed on a
+      // second try. Anything the server actually answered is final, so
+      // it isn't retried.
+      let lastMessage = "";
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const { error: uploadError } = await supabase.storage
+          .from(MEDIA_BUCKET)
+          .upload(path, file, { upsert: false });
+
+        if (!uploadError) {
+          onChange(path);
+          return;
+        }
+
+        // The first attempt can land after its response is lost, so a
+        // retry that reports this exact path already exists means the
+        // file is in fact stored.
+        if (attempt > 0 && ALREADY_EXISTS.test(uploadError.message)) {
+          onChange(path);
+          return;
+        }
+
+        lastMessage = uploadError.message;
+        if (!NETWORK_FAILURE.test(uploadError.message)) break;
       }
-      onChange(path);
+
+      setError(describeUploadError(lastMessage));
     } finally {
       setUploading(false);
     }
