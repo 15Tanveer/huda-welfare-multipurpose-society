@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu } from "lucide-react";
 import { NAV_LINKS } from "@/lib/constants";
 import { Container } from "@/components/ui/Container";
@@ -14,6 +14,24 @@ export function Header({ shortName }: { shortName: string }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Sticky filter bars sit directly under this header, which changes
+  // height when it shrinks on scroll. Publishing the measured height as
+  // `--header-h` keeps them flush at either height (see StickyFilterBar).
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const publish = () =>
+      document.documentElement.style.setProperty(
+        "--header-h",
+        `${el.getBoundingClientRect().height}px`
+      );
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -25,6 +43,7 @@ export function Header({ shortName }: { shortName: string }) {
   return (
     <>
       <header
+        ref={headerRef}
         className={`sticky top-0 z-40 border-b bg-white/95 backdrop-blur transition-shadow duration-200 ${
           scrolled ? "border-brand/10 shadow-sm" : "border-transparent"
         }`}
