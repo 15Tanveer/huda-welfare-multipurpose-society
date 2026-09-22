@@ -189,6 +189,8 @@ export const galleryFormSchema = z
       .optional()
       .or(z.literal(""))
       .transform((v) => (v ? v : null)),
+    source_logo_path: optionalStoragePath,
+    source_url: optionalHttpUrl("Publication / channel link"),
     coverage_url: optionalHttpUrl("Coverage URL"),
   })
   .superRefine((value, ctx) => {
@@ -291,12 +293,21 @@ export function normalizeGalleryInput(input: GalleryFormInput): GalleryInsert {
     image_path: input.image_path,
   };
 
+  // Crediting the outlet applies to a news video just as much as to a
+  // clipping, so those fields are kept for both and cleared only for a
+  // plain photo.
+  const credit = {
+    source_name: input.source_name,
+    source_logo_path: input.source_logo_path,
+    source_url: input.source_url,
+  };
+
   if (input.media_type === "video") {
     return {
       ...base,
+      ...credit,
       video_url: input.video_url,
       video_source: input.video_source,
-      source_name: null,
       coverage_url: null,
     };
   }
@@ -304,9 +315,9 @@ export function normalizeGalleryInput(input: GalleryFormInput): GalleryInsert {
   if (input.media_type === "press") {
     return {
       ...base,
+      ...credit,
       video_url: null,
       video_source: null,
-      source_name: input.source_name,
       coverage_url: input.coverage_url,
     };
   }
@@ -316,6 +327,8 @@ export function normalizeGalleryInput(input: GalleryFormInput): GalleryInsert {
     video_url: null,
     video_source: null,
     source_name: null,
+    source_logo_path: null,
+    source_url: null,
     coverage_url: null,
   };
 }

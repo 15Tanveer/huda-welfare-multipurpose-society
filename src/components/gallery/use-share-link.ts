@@ -46,7 +46,16 @@ export function useShareLink(url: string, title: string) {
     await copy();
   }
 
-  const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${title} — ${url}`)}`;
+  const encodedUrl = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(`${title} — ${url}`);
 
-  return { copied, copy, share, whatsappHref };
+  /** Each platform's own share endpoint — no SDK, no tracking script. */
+  const hrefs = {
+    whatsapp: `https://wa.me/?text=${encodedText}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    x: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodeURIComponent(title)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+  };
+
+  return { copied, copy, share, hrefs };
 }

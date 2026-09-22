@@ -86,3 +86,17 @@ export async function getProgramById(id: string): Promise<ProgramRow | null> {
   const { data } = await supabase.from("programs").select("*").eq("id", id).maybeSingle();
   return data ?? null;
 }
+
+/**
+ * The programs a set of gallery items link to, for the lightbox's
+ * "Part of Program" card and its date / location / beneficiaries strip.
+ * Returns only the programs that exist, so a stale link simply shows
+ * nothing rather than breaking the panel.
+ */
+export async function getProgramsByIds(ids: string[]): Promise<ProgramRow[]> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0 || !isSupabaseConfigured()) return [];
+  const supabase = createPublicClient();
+  const { data } = await supabase.from("programs").select("*").in("id", unique);
+  return data ?? [];
+}
