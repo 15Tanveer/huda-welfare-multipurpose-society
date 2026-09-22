@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getGalleryItemById, getGalleryItems } from "@/lib/data/gallery";
 import { galleryItemLabel, galleryThumbnailUrl } from "@/lib/gallery-media";
 import { PageHero } from "@/components/layout/PageHero";
-import { Container } from "@/components/ui/Container";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 const BASE_DESCRIPTION =
@@ -64,9 +63,9 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
         description="Photographs, videos and media coverage from HUDA's community programs will appear here as they are conducted."
       />
 
-      <Container className="py-16 sm:py-20">
-        <GalleryGrid items={items} initialItemId={itemId} />
-      </Container>
+      {/* GalleryGrid renders its own sticky filter bar directly under the
+          hero, then the grid inside a Container. */}
+      <GalleryGrid items={items} initialItemId={itemId} />
     </>
   );
 }
