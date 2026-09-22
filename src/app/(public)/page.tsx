@@ -38,13 +38,17 @@ export default async function HomePage() {
     <>
       <HeroSection settings={settings} />
       <WhoWeAreSection settings={settings} />
+      {/* Straight after "who we are" comes "what we have actually
+          done" — the work is the proof of the introduction, and it
+          used to sit below every other section where few visitors
+          reached it. */}
+      <RecentProgramsSection programs={recentPrograms} />
       <FocusAreaSection />
       <ResourcesSection resources={featuredResources} />
       <UpcomingProgramSection program={upcomingProgram} />
       <MissionVisionSection settings={settings} />
       <OurApproachSection />
       <GetInvolvedSection />
-      <RecentProgramsSection programs={recentPrograms} />
       <NewsletterSection />
     </>
   );

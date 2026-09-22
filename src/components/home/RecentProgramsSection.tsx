@@ -12,7 +12,7 @@ export function RecentProgramsSection({ programs }: { programs: ProgramRow[] }) 
   if (programs.length === 0) return null;
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-brand-light/30 py-16 sm:py-20">
       <Container className="flex flex-col gap-10">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <SectionHeading
