@@ -209,6 +209,32 @@ export function galleryItemLabel(item: GalleryRow): string {
 }
 
 /**
+ * Synthesized ids for `program_gallery` rows presented as gallery items.
+ * They are not rows of the `gallery` table, so nothing can deep-link to
+ * them on /gallery — see `galleryShareUrl`.
+ */
+const PROGRAM_GALLERY_ID_PREFIX = "program-gallery-";
+
+/**
+ * HUDA's own link for a gallery item: the gallery page with the item
+ * opened. Sharing always points here rather than at a YouTube or news
+ * URL, so shared media brings people to the site; the original stays one
+ * click away inside the item itself.
+ *
+ * `null` for a program's own photo, which has no gallery row to open.
+ */
+export function galleryShareUrl(item: GalleryRow, siteUrl: string): string | null {
+  if (item.id.startsWith(PROGRAM_GALLERY_ID_PREFIX)) return null;
+  return `${siteUrl.replace(/\/$/, "")}/gallery?item=${encodeURIComponent(item.id)}`;
+}
+
+/** "Watch on YouTube" / "Open original video" for a video item's source. */
+export function watchOriginalLabel(item: GalleryRow): string {
+  const source = videoSourceLabel(item.video_source);
+  return source && source !== "External Video URL" ? `Watch on ${source}` : "Open original video";
+}
+
+/**
  * Presents a `program_gallery` row (the program's own photo set) in the
  * same shape as a general gallery item, so one lightbox and one set of
  * cards can render both without copying rows between the two tables.
@@ -218,7 +244,7 @@ export function programGalleryAsMediaItem(
   category: GalleryCategory
 ): GalleryRow {
   return {
-    id: `program-gallery-${row.id}`,
+    id: `${PROGRAM_GALLERY_ID_PREFIX}${row.id}`,
     title: null,
     caption: row.caption,
     category,

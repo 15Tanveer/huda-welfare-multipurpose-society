@@ -5,7 +5,15 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import type { GalleryRow } from "@/types/database";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
-import { galleryItemLabel, galleryThumbnailUrl, resolveVideoEmbed } from "@/lib/gallery-media";
+import { getSiteUrl } from "@/lib/site-url";
+import {
+  galleryItemLabel,
+  galleryShareUrl,
+  galleryThumbnailUrl,
+  resolveVideoEmbed,
+  watchOriginalLabel,
+} from "@/lib/gallery-media";
+import { GalleryShare } from "@/components/gallery/GalleryShare";
 
 interface GalleryLightboxProps {
   items: GalleryRow[];
@@ -46,6 +54,10 @@ export function GalleryLightbox({ items, activeIndex, onClose, onNavigate }: Gal
   const imageUrl =
     item.media_type === "video" ? galleryThumbnailUrl(item) : getPublicImageUrl(item.image_path);
   const hasArrows = items.length > 1;
+  // NEXT_PUBLIC_SITE_URL is inlined into the client bundle, so this is
+  // the same string on the server and in the browser — no hydration gap,
+  // and a share from a preview build still points at the real site.
+  const shareUrl = galleryShareUrl(item, getSiteUrl());
 
   return (
     // The dialog scrolls rather than clipping when a tall portrait
@@ -179,6 +191,27 @@ export function GalleryLightbox({ items, activeIndex, onClose, onNavigate }: Gal
                 View Original Coverage
                 <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
+            ) : null}
+
+            {/* A video plays in the modal, but people still want the
+                original — on YouTube it also counts towards HUDA's own
+                channel. `link` embeds already offer their own button. */}
+            {item.media_type === "video" && item.video_url && embed?.kind !== "link" ? (
+              <a
+                href={item.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-white/80 underline underline-offset-4 transition-colors hover:text-white"
+              >
+                {watchOriginalLabel(item)}
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            ) : null}
+
+            {shareUrl ? (
+              <div className="mt-2">
+                <GalleryShare url={shareUrl} title={label} />
+              </div>
             ) : null}
           </div>
         </div>

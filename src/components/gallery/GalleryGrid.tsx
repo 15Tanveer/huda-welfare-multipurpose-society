@@ -18,10 +18,24 @@ const pillClasses = (active: boolean) =>
     active ? "bg-brand-deep text-white" : "bg-brand-light text-brand-deep hover:bg-brand-light/70"
   }`;
 
-export function GalleryGrid({ items }: { items: GalleryRow[] }) {
+export function GalleryGrid({
+  items,
+  /** `?item=` from the URL — a shared link opens straight on that item. */
+  initialItemId,
+}: {
+  items: GalleryRow[];
+  initialItemId?: string;
+}) {
   const [category, setCategory] = useState<string>("all");
   const [mediaType, setMediaType] = useState<MediaFilter>("all");
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  // Resolved during the first render rather than in an effect, so a
+  // shared link paints with the item already open. Filters start at
+  // "all", so this index is the item's index in `filtered` too.
+  const [activeIndex, setActiveIndex] = useState<number | null>(() => {
+    if (!initialItemId) return null;
+    const index = items.findIndex((i) => i.id === initialItemId);
+    return index === -1 ? null : index;
+  });
 
   const filtered = useMemo(
     () =>
@@ -56,14 +70,27 @@ export function GalleryGrid({ items }: { items: GalleryRow[] }) {
     );
   }
 
+  /**
+   * Opens or closes an item, keeping the address bar in step so the link
+   * a visitor copies (or shares from the lightbox) points at this exact
+   * item. `replaceState` rather than a router push: the gallery is
+   * already rendered, so there is nothing to re-fetch and the back
+   * button shouldn't have to step through every item someone browsed.
+   */
+  function openItem(index: number | null) {
+    setActiveIndex(index);
+    const item = index === null ? null : filtered[index];
+    window.history.replaceState(null, "", item ? `/gallery?item=${item.id}` : "/gallery");
+  }
+
   function selectMedia(next: MediaFilter) {
     setMediaType(next);
-    setActiveIndex(null);
+    openItem(null);
   }
 
   function selectCategory(next: string) {
     setCategory(next);
-    setActiveIndex(null);
+    openItem(null);
   }
 
   return (
@@ -154,7 +181,7 @@ export function GalleryGrid({ items }: { items: GalleryRow[] }) {
       ) : (
         <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4 [&>*]:break-inside-avoid">
           {filtered.map((item, index) => (
-            <MediaCard key={item.id} item={item} onOpen={() => setActiveIndex(index)} />
+            <MediaCard key={item.id} item={item} onOpen={() => openItem(index)} />
           ))}
         </div>
       )}
@@ -163,8 +190,8 @@ export function GalleryGrid({ items }: { items: GalleryRow[] }) {
         <GalleryLightbox
           items={filtered}
           activeIndex={activeIndex}
-          onClose={() => setActiveIndex(null)}
-          onNavigate={setActiveIndex}
+          onClose={() => openItem(null)}
+          onNavigate={openItem}
         />
       ) : null}
     </div>
