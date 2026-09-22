@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
         <StatCard label="Total Programs" value={stats.totalPrograms} icon={Calendar} />
         <StatCard label="Upcoming Programs" value={stats.upcomingPrograms} icon={CalendarClock} />
         <StatCard label="Completed Programs" value={stats.completedPrograms} icon={CalendarCheck} />
-        <StatCard label="Gallery Images" value={stats.galleryImages} icon={ImageIcon} />
+        <StatCard label="Gallery Items" value={stats.galleryImages} icon={ImageIcon} />
         <StatCard label="Volunteer Requests" value={stats.volunteerRequests} icon={Users} />
         <StatCard label="New Contact Messages" value={stats.newContactMessages} icon={Mail} />
         <StatCard label="Active Resources" value={stats.activeResources} icon={BookMarked} />

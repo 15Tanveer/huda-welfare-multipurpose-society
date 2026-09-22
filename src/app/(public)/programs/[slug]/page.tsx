@@ -8,6 +8,8 @@ import {
   getProgramBySlug,
   getProgramGallery,
 } from "@/lib/data/programs";
+import { getGalleryItemsByProgram } from "@/lib/data/gallery";
+import { buildProgramMedia } from "@/lib/gallery-media";
 import { getSiteSettings } from "@/lib/settings";
 import { PROGRAM_CATEGORIES } from "@/lib/constants";
 import { formatProgramDate, formatTimeRange } from "@/lib/format";
@@ -20,6 +22,7 @@ import { BrandPlaceholder } from "@/components/ui/BrandPlaceholder";
 import { Button } from "@/components/ui/Button";
 import { ShareButtons } from "@/components/programs/ShareButtons";
 import { ProgramStats } from "@/components/programs/ProgramStats";
+import { ProgramMediaSections } from "@/components/gallery/ProgramMediaSections";
 
 export async function generateStaticParams() {
   const slugs = await getAllProgramSlugs();
@@ -68,10 +71,17 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
   const program = await getProgramBySlug(slug);
   if (!program) notFound();
 
-  const [gallery, settings] = await Promise.all([
+  const [programGallery, linkedMedia, settings] = await Promise.all([
     getProgramGallery(program.id),
+    getGalleryItemsByProgram(program.id),
     getSiteSettings(),
   ]);
+
+  // `program_gallery` (the program's own photo set) and the general
+  // `gallery` table are separate collections; this merges them for
+  // display — de-duplicated on storage path — instead of copying rows
+  // between the two.
+  const media = buildProgramMedia(programGallery, linkedMedia, program.category);
 
   const coverUrl = getPublicImageUrl(program.cover_image);
   const categoryLabel =
@@ -157,28 +167,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
             <TextSection title="Program Highlights" content={program.activities} />
             <TextSection title="Outcomes" content={program.outcomes} />
 
-            {gallery.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <h2 className="text-lg font-semibold text-brand-ink">Program Gallery</h2>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {gallery.map((item) => {
-                    const url = getPublicImageUrl(item.image_path);
-                    if (!url) return null;
-                    return (
-                      <div key={item.id} className="relative aspect-square overflow-hidden rounded-xl border border-brand-ink/8">
-                        <Image
-                          src={url}
-                          alt={item.caption || program.title}
-                          fill
-                          sizes="(min-width: 640px) 33vw, 50vw"
-                          className="object-cover"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
+            <ProgramMediaSections media={media} programTitle={program.title} />
           </div>
 
           <aside className="flex flex-col gap-6">

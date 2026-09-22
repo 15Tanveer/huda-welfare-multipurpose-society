@@ -55,6 +55,14 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      // YouTube's own thumbnails, used for gallery video cards whose
+      // admin didn't upload a custom cover image (see
+      // src/lib/gallery-media.ts). Nothing else is served from here.
+      {
+        protocol: "https" as const,
+        hostname: "i.ytimg.com",
+        pathname: "/vi/**",
+      },
     ],
   },
 };

@@ -7,7 +7,7 @@ import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 export const metadata: Metadata = {
   title: "Gallery",
   description:
-    "Photographs from HUDA Welfare & Educational Multipurpose Society's community programs and activities.",
+    "Photographs, videos and press coverage from HUDA Welfare & Educational Multipurpose Society's community programs and activities.",
   alternates: { canonical: "/gallery" },
 };
 
@@ -19,7 +19,7 @@ export default async function GalleryPage() {
       <PageHero
         eyebrow="Gallery"
         title="Our activity gallery"
-        description="Photographs from HUDA's community programs will appear here as they are conducted."
+        description="Photographs, videos and media coverage from HUDA's community programs will appear here as they are conducted."
       />
 
       <Container className="py-16 sm:py-20">
