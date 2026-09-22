@@ -4,6 +4,8 @@ import { getPastPrograms, getUpcomingPrograms } from "@/lib/data/programs";
 import { PROGRAM_CATEGORIES } from "@/lib/constants";
 import { PageHero } from "@/components/layout/PageHero";
 import { Container } from "@/components/ui/Container";
+import { StickyFilterBar } from "@/components/ui/StickyFilterBar";
+import { ChipScroller, subChipClasses } from "@/components/ui/ChipScroller";
 import { ProgramGrid } from "@/components/programs/ProgramGrid";
 
 export const metadata: Metadata = {
@@ -48,18 +50,14 @@ export default async function ProgramsPage({ searchParams }: ProgramsPageProps) 
         description="Explore what HUDA is planning and, over time, what we have completed."
       />
 
-      <Container className="flex flex-col gap-8 py-16 sm:py-20">
-        <div className="flex flex-col gap-6">
-          <div
-            role="tablist"
-            aria-label="Program status"
-            className="inline-flex w-fit rounded-full border border-brand-ink/10 bg-white p-1"
-          >
+      <StickyFilterBar>
+        <ChipScroller label="Program status" role="tablist">
+          <div className="inline-flex shrink-0 rounded-full border border-brand-ink/10 bg-white p-1">
             <Link
               href={tabHref("upcoming")}
               role="tab"
               aria-selected={tab === "upcoming"}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                 tab === "upcoming" ? "bg-brand-deep text-white" : "text-brand-ink/70"
               }`}
             >
@@ -69,39 +67,32 @@ export default async function ProgramsPage({ searchParams }: ProgramsPageProps) 
               href={tabHref("past")}
               role="tab"
               aria-selected={tab === "past"}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                 tab === "past" ? "bg-brand-deep text-white" : "text-brand-ink/70"
               }`}
             >
               Past ({past.length})
             </Link>
           </div>
+        </ChipScroller>
 
-          <div className="flex flex-wrap gap-2">
+        <ChipScroller label="Filter programs by category">
+          <Link href={categoryHref(undefined)} className={subChipClasses(!category)}>
+            All Categories
+          </Link>
+          {PROGRAM_CATEGORIES.map((c) => (
             <Link
-              href={categoryHref(undefined)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                !category ? "bg-brand-light text-brand-deep" : "text-brand-muted hover:bg-brand-light/60"
-              }`}
+              key={c.value}
+              href={categoryHref(c.value)}
+              className={subChipClasses(category === c.value)}
             >
-              All Categories
+              {c.label}
             </Link>
-            {PROGRAM_CATEGORIES.map((c) => (
-              <Link
-                key={c.value}
-                href={categoryHref(c.value)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                  category === c.value
-                    ? "bg-brand-light text-brand-deep"
-                    : "text-brand-muted hover:bg-brand-light/60"
-                }`}
-              >
-                {c.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+          ))}
+        </ChipScroller>
+      </StickyFilterBar>
 
+      <Container className="flex flex-col gap-8 py-8 sm:py-12">
         <ProgramGrid
           programs={filtered}
           emptyTitle={

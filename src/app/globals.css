@@ -13,6 +13,19 @@
 
   --background: var(--color-off-white);
   --foreground: var(--color-ink);
+
+  /* Live height of the sticky site header, republished by Header.tsx as
+     it shrinks on scroll. Sticky filter bars offset themselves by this so
+     they stay flush under the header at either height. The values here
+     are only the pre-hydration fallback (the header's scrolled height,
+     which is when a sticky filter bar is actually visible). */
+  --header-h: 69px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-h: 77px;
+  }
 }
 
 @theme inline {
@@ -125,5 +138,16 @@ body {
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Horizontal filter rows scroll by swipe/trackpad; the scrollbar itself
+     would sit under the chips and clutter a one-line row. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

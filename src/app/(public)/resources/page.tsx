@@ -33,9 +33,11 @@ export default async function ResourcesPage() {
         </p>
       </PageHero>
 
-      <Container className="flex flex-col gap-16 py-16 sm:py-20">
-        <ResourcesExplorer resources={resources} />
+      {/* ResourcesExplorer renders its own sticky filter bar directly
+          under the hero, then the results inside a Container. */}
+      <ResourcesExplorer resources={resources} />
 
+      <Container className="flex flex-col gap-16 pb-16 sm:pb-20">
         <section className="flex flex-col gap-6">
           <SectionHeading
             eyebrow="Official Government Resources"
